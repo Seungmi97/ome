@@ -32,8 +32,6 @@ main    실제 배포
 dev    전체 개발 통합
 frontend-dev    프론트 전용 통합
 feature/frontend-xxx/#1     프론트 기능 개발용
-...
 backend-dev    백엔드 전용 통합
 feature/backend-user-crud/#1    백엔드 기능 개발용
 feature/backend-subscribe-crud/#2
-...
