@@ -4,7 +4,6 @@ import { login as loginAPI } from '@/services/authAPI';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/ome.png';
 import { useAuth } from '@/hooks/useAuth'; // 실제 사용할 경우만 유지
-import ProgressBar from '@/components/progressbar'; // 로딩바 컴포넌트
 
 export default function Login() {
   const [id, setId] = useState('');
