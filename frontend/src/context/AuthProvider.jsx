@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from './AuthContext';
 import { refresh as refreshAPI, getMyProfile } from '@/services/authAPI';
-import '@/types/user'; // 🔥 JSDoc 타입 인식용 (자동완성 가능하게 함)
+import '@/types/User'; // 🔥 JSDoc 타입 인식용 (자동완성 가능하게 함)
 
 export const AuthProvider = ({ children }) => {
   /** @type {[User|null, Function]} */
