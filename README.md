@@ -13,9 +13,27 @@
 - 💌 개인 맞춤형 레시피 추천 (예정)
 
 ## 기술 스택
+1) 백엔드
 - Java 21
 - Spring Boot
 - Spring Data JPA (Hibernate)
-- Thymeleaf
 - MySQL
 - Maven
+
+2) 프론트 엔드
+- React & React-Router-dom
+- Vite/tailwindcss 4.1.7
+- javascript & Axios
+- Npm & NginX 
+
+
+[브랜치 구조]
+main    실제 배포
+dev    전체 개발 통합
+frontend-dev    프론트 전용 통합
+feature/frontend-xxx/#1     프론트 기능 개발용
+...
+backend-dev    백엔드 전용 통합
+feature/backend-user-crud/#1    백엔드 기능 개발용
+feature/backend-subscribe-crud/#2
+...
