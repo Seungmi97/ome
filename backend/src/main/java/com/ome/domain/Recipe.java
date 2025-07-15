@@ -2,6 +2,9 @@ package com.ome.domain;
 
 import java.time.LocalDateTime;
 
+import com.ome.common.enums.PremiumType;
+import com.ome.common.enums.RecipeCategory;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +15,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +30,7 @@ public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recipe_id")
-    private Long id;
+    private Long recipeId;
 
     // 작성자 (creator_id → users.id)
     @ManyToOne(fetch = FetchType.LAZY)

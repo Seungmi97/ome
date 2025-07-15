@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +23,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ome.common.enums.Category;
 import com.ome.common.enums.PremiumType;
+import com.ome.common.enums.Role;
 import com.ome.dto.recipe.request.RecipeRequestDto;
 import com.ome.dto.recipe.response.RecipeDetailDto;
 import com.ome.dto.recipe.response.RecipeResponseDto;
 import com.ome.service.recipe.RecipeService;
-
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.ome.service.auth.CustomUserDetails;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -46,13 +51,19 @@ public class RecipeController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // multipart/form-data 형식의 요청만 처리 (파일 + JSON 업로드용)
     public ResponseEntity<?> createRecipe( 
             @RequestPart("data") String json,  // JSON 형식의 레시피 데이터 파트 (문자열로 받음)
-            @RequestPart(value = "files", required = false) List<MultipartFile> files // 업로드한 이미지 파일들
+            @RequestPart(value = "files", required = false) List<MultipartFile> files, // 업로드한 이미지 파일들
+            @AuthenticationPrincipal CustomUserDetails user
     ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         RecipeRequestDto dto = objectMapper.readValue(json, RecipeRequestDto.class); // 직접 파싱
     	
-        Long fakeUserId = 1L; // TODO: 로그인 연동 후 교체 (테스트용 유저)
-        Long recipeId = recipeService.createRecipeWithMedia(fakeUserId, dto, files != null ? files : List.of());
+        // 권한 체크
+        if (user.getRole() != Role.CREATOR && user.getRole() != Role.ADMIN) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("레시피 등록 권한 없음");
+        }
+        
+        Long userId = user.getId();
+        Long recipeId = recipeService.createRecipeWithMedia(userId, dto, files != null ? files : List.of());
         
         return ResponseEntity.ok(Map.of("recipeId", recipeId));
     }
@@ -73,7 +84,7 @@ public class RecipeController {
             @RequestParam(required = false) Category category,
             @RequestParam(required = false) PremiumType isPremium,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) { // 페이징 정렬 순서 설정 enum
-        Page<RecipeResponseDto> result = recipeService.findAllRecipes(keyword, category, isPremium, pageable);
+        Page<RecipeResponseDto> result = recipeService.getAllRecipes(keyword, category, isPremium, pageable);
         return ResponseEntity.ok(result);
     }
     
@@ -85,9 +96,9 @@ public class RecipeController {
      * @return
      */
     @GetMapping("/{recipeId}")
-    public ResponseEntity<?> getRecipeDetail(@PathVariable Long recipeId) {
-        Long fakeUserId = 1L; // 로그인 연동 후 교체
-        RecipeDetailDto detail  = recipeService.getRecipeDetail(recipeId, fakeUserId);
+    public ResponseEntity<?> getRecipeDetail(@PathVariable Long recipeId, @AuthenticationPrincipal CustomUserDetails user) {
+        Long userId = user.getId();
+        RecipeDetailDto detail  = recipeService.getRecipeDetail(recipeId, userId);
         return ResponseEntity.ok(detail);
     }
     

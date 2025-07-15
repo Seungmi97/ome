@@ -2,8 +2,7 @@ package com.ome.domain;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.tool.schema.TargetType;
-
+import com.ome.common.enums.TargetType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -25,12 +25,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Membership {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long memId;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private Users users;
+    private Users user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "member_state", nullable = false)

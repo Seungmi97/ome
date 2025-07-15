@@ -31,7 +31,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             AND (:category IS NULL OR r.category = :category)   
             AND (:isPremium IS NULL OR r.isPremium = :isPremium)
         """) // null 체크를 조건 안에 넣어서, 값이 없으면 해당 조건은 무시됨
-        Page<Recipe> findAllRecipes(
+        Page<Recipe> getAllRecipes(
             @Param("keyword") String keyword,
             @Param("category") Category category,
             @Param("isPremium") PremiumType isPremium,

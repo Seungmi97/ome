@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.ome.common.enums.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,14 +21,18 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
 
+
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -65,8 +72,8 @@ public class Users {
     // 헬퍼 메서드 (멤버쉽 자동 추가)
     public void setMembership(Membership membership) {
         this.membership = membership;
-        if (membership.getUsers() != this) {
-            membership.setUsers(this);
+        if (membership.getUser() != this) {
+            membership.setUser(this);
         }
     }
 
@@ -75,5 +82,11 @@ public class Users {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    
+    //헬퍼 메소드 
+    public void addRecipe(Recipe recipe) {
+        this.recipes.add(recipe);
+        recipe.setWriter(this);
+    }
 
 }
