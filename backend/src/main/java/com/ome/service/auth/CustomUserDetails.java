@@ -6,6 +6,7 @@ import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.ome.common.enums.Role;
 import com.ome.domain.Users;
 
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,14 @@ public class CustomUserDetails implements UserDetails {
 	 
 	 public Users getUser() {
 		 return user;
+	 }
+	 
+	 public Role getRole() {
+		    return user.getRole();
+	 }
+
+	 public Long getId() {
+	    return user.getId();
 	 }
 	
 

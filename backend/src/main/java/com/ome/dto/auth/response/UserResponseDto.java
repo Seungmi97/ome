@@ -1,6 +1,6 @@
 package com.ome.dto.auth.response;
 
-import com.ome.domain.Users.Role;
+import com.ome.common.enums.Role;
 
 import lombok.Builder;
 import lombok.Getter;

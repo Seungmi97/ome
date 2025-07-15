@@ -22,7 +22,7 @@ public class UserInfoResponseDto {
 		this.username = user.getUsername();
 		this.email = user.getEmail();
 		this.role = user.getRole().name();
-		this.approved = user.getApproved();
+		this.approved = user.isApproved();
 		this.createdAt = user.getCreatedAt();
 		
 	}
