@@ -1,0 +1,11 @@
+
+/**
+ * @typedef {Object} User
+ * @property {string} id
+ * @property {string} username
+ * @property {string} email
+ * @property {'user' | 'creator'} role
+ * @property {string} approved
+ * @property {string} createdAt
+ * @property {string} updatedAt
+ */
