@@ -32,10 +32,23 @@ public class AuthService {
 			throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
 		}
 		
+		// 이메일 형식 검증
+		if (!dto.getEmail().contains("@")) {
+		    throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
+		}
+
+		
 		// 아이디 중복 방지
 		if ( repository.existsByUserId(dto.getUserId())) {
 			throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
 		}
+		
+		// 비밀번호 6자리 이상 검증하기 
+		if (dto.getPassword().length() < 6) {
+		    throw new IllegalArgumentException("비밀번호는 6자 이상이어야 합니다.");
+		}
+
+		
 		
 		Role role = Role.USER;
 		boolean approved = true;
