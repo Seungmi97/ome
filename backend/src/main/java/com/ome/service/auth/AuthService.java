@@ -47,16 +47,10 @@ public class AuthService {
 		    throw new IllegalArgumentException("비밀번호는 6자 이상이어야 합니다.");
 		}
 
-		
-		
+			
 		Role role = Role.USER;
-		boolean approved = true;
+		boolean approved = dto.isApplyAsCreator() ? false : true; // 작가 신청하면 -> 작가 승인이 false로 됨.
 
-		// 작가 신청 시 -> 임시로 user로 표시하고 관리자 승인 대기함.
-		if (dto.isApplyAsCreator()) {
-			role = Role.USER;       
-			approved = false;        
-		}
 		
 		Users user = Users.builder()
 				.userId(dto.getUserId())
@@ -75,10 +69,11 @@ public class AuthService {
 	
 	// 🔴 로그인 
 	public String login(LoginRequestDto dto) {
+		 
 		// 사용자 id 일치 여부 확인
 		Users user = repository.findByUserId(dto.getUserId())
 				.orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
-		
+		 System.out.println("DB 비번: " + user.getPassword());
 		// 패스워드 일치하는지 여부 확인 
 		if(!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
