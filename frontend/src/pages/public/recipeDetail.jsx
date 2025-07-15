@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getRecipeById } from '../../services/recipeAPI.js'; // API 호출 함수
+import { getRecipeDetail } from '../../services/recipeAPI.js'; // API 호출 함수
 
 const RecipeDetail = () => {
     // URL 파라미터에서 레시피 ID 추출
@@ -15,7 +15,7 @@ const RecipeDetail = () => {
         const fetchRecipeData = async () => {
             try {
                 setLoading(true);
-                const data = await getRecipeById(recipeId);
+                const data = await getRecipeDetail(recipeId);
                 setRecipe(data);
             } catch (err) {
                 setError(err.message || '레시피를 불러오는 중 오류가 발생했습니다.');
@@ -61,20 +61,23 @@ const RecipeDetail = () => {
         </h1>
 
         {/* 작성자 정보 */}
+      {recipe.author?.name && (
         <div className="flex items-center mb-6 text-gray-600">
           <span>
-            By <span className="font-semibold text-gray-800">{recipe.author?.name}</span>
+            By <span className="font-semibold text-gray-800">{recipe.author.name}</span>
           </span>
         </div>
+      )}
 
-        {/* 레시피 이미지 */}
-        <div className="mb-8">
-          <img
-            src={recipe.imageUrl}
-            alt={recipe.title}
-            className="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg"
-          />
-        </div>
+      {/* 이미지 */}
+      {recipe.imageUrl && (
+        <img
+          src={recipe.imageUrl}
+          alt={recipe.title}
+          className="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg mb-8"
+        />
+      )}
+
 
         {/* 레시피 설명 */}
         <p className="text-lg text-gray-700 mb-8 leading-relaxed">
@@ -113,12 +116,16 @@ const RecipeDetail = () => {
             재료
           </h2>
           <ul className="space-y-3 text-gray-700">
-            {recipe.ingredients.map((item, index) => (
-              <li key={index} className="flex justify-between items-center">
-                <span>{item.name}</span>
-                <span className="font-medium text-gray-600">{item.amount}</span>
-              </li>
-            ))}
+            {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 ? (
+              recipe.ingredients.map((item, index) => (
+                <li key={index} className="flex justify-between items-center">
+                  <span>{item.name}</span>
+                  <span className="font-medium text-gray-600">{item.amount}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-400">재료 정보가 없습니다.</li>
+            )}
           </ul>
         </div>
 
@@ -128,14 +135,18 @@ const RecipeDetail = () => {
             조리 방법
           </h2>
           <ol className="space-y-6">
-            {recipe.instructions.map((step, index) => (
-              <li key={index} className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                  {index + 1}
-                </div>
-                <p className="flex-1 pt-1 text-gray-800 leading-relaxed">{step}</p>
-              </li>
-            ))}
+            {Array.isArray(recipe.instructions) && recipe.instructions.length > 0 ? (
+              recipe.instructions.map((step, index) => (
+                <li key={index} className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    {index + 1}
+                  </div>
+                  <p className="flex-1 pt-1 text-gray-800 leading-relaxed">{step}</p>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-400">조리 방법이 없습니다.</li>
+            )}
           </ol>
         </div>
 
