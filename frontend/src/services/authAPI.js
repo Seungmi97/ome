@@ -26,8 +26,8 @@ export const refresh = () => api.post('/auth/refresh');
  */
 export const logout = () => api.post('/auth/logout');
 
-/**
+/**st
  * 로그인한 유저 정보 조회
- * @returns {Promise<import('@/types/user').User>}
+ * @returns {Promise<import('@/types/User').User>}
  */
 export const getMyProfile = () => api.get('/users/me'); 
