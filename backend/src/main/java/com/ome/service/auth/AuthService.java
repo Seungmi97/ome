@@ -4,9 +4,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ome.domain.Users;
-import com.ome.dto.admin.response.SignupResponseDto;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
+import com.ome.dto.auth.response.SignupResponseDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.util.JwtUtil;
 
