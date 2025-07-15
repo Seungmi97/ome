@@ -9,7 +9,7 @@ export const login = (payload) => api.post('/auth/login', payload);
 
 /**
  * 회원가입 요청
- * @param {{ id: string, password: string, email: string }} payload
+ * @param {{ id: string, password: string, email: string, role: string }} payload
  * @returns {Promise<any>}
  */
 export const signup = (payload) => api.post('/auth/signup', payload);

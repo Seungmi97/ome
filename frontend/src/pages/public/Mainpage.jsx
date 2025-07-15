@@ -1,37 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MainLayout from '@/layouts/MainLayout';
 import FilterSidebar from '@/components/FilterSidebar';
-import RecipeCard from '@/components/RecipeCard';
-
-const dummyData = [
-    { title: '야메 야끼우동', price: '$ Free' },
-    { title: '돈부리 덮밥', price: '$ Free' },
-    { title: '간장계란 밥 (초간단)', price: '$ Free' },
-    { title: '스폰지 밥', price: '$ Platinum' },
-    { title: '고래밥', price: '$ Platinum' },
-    { title: '캐비어 스시', price: '$ Platinum' },
-];
+import MainContent from '@/components/MainContent';
 
 const MainPage = () => {
-    return (
-        <MainLayout>
-            <div className="flex gap-6">
-                <FilterSidebar />
-                <div className="flex-1">
-                    <div className="mb-4 flex items-center justify-between">
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            className="border px-4 py-2 rounded-md w-full max-w-md"
-                        />
-                    </div>
+    const [keywords, setKeywords] = useState([]);
+    const [visibleCount, setVisibleCount] = useState(20);
 
-                    <div className="grid grid-cols-3 gap-6 max-w-5xl mx-auto">
-                        {dummyData.map((item, idx) => (
-                            <RecipeCard key={idx} title={item.title} price={item.price} />
-                        ))}
-                    </div>
-                </div>
+    const handleAddKeyword = (word) => {
+        if (!keywords.includes(word.trim())) {
+            setKeywords((prev) => [...prev, word.trim()]);
+        }
+    };
+
+    const resetState = () => {
+        setKeywords([]);
+        setVisibleCount(20);
+    };
+
+    const handleRemoveKeyword = (word) => {
+        setKeywords((prev) => prev.filter((k) => k !== word));
+    };
+
+    return (
+        <MainLayout onReset={resetState}>
+            <div className="flex gap-6">
+                <FilterSidebar
+                    keywords={keywords}
+                    onRemoveKeyword={handleRemoveKeyword}
+                    onReset={resetState}
+                />
+                <MainContent
+                    keywords={keywords}
+                    onAddKeyword={handleAddKeyword}
+                    visibleCount={visibleCount}
+                    setVisibleCount={setVisibleCount}
+                />
             </div>
         </MainLayout>
     );
