@@ -15,18 +15,26 @@ export default function Signup() {
     passwordConfirm: '',
     email: '',
     username: '',
+    role: 'user',
   });
   const [loading, setLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState(''); // 비밀번호 불일치 에러 메시지
+  const [signupError, setSignupError] = useState(''); // 회원가입 실패 에러 메시지
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    setPasswordError('');
+    setSignupError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (form.password !== form.passwordConfirm) {
-      return alert('비밀번호가 일치하지 않습니다.');
+      setPasswordError('비밀번호를 다시 확인해주세요.');
+      setSignupError('');
+      return;
     }
 
     setLoading(true);
@@ -36,13 +44,21 @@ export default function Signup() {
         password: form.password,
         email: form.email,
         username: form.username,
+        role: form.role,
       });
 
       const res = await login({ id: form.id, password: form.password });
       await doLogin({ accessToken: res.data.accessToken });
       navigate('/user/home');
     } catch (err) {
-      alert('회원가입 실패: ' + err?.response?.data?.message || err.message);
+      if (err.response && err.response.data) {
+        setSignupError(err.response.data.message || '회원가입에 실패하였습니다.');
+      } else {
+        setSignupError('회원가입에 실패하였습니다. 다시 시도해주세요.');
+      }
+      console.error(err);
+      setPasswordError('');
+      setSignupError('회원가입에 실패하였습니다.');
     } finally {
       setLoading(false);
     }
@@ -62,18 +78,23 @@ export default function Signup() {
           <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} />
           <Input label="Password Confirm" name="passwordConfirm" type="password" value={form.passwordConfirm} onChange={handleChange} />
           
-          {/* Email + 인증코드 전송 */}
+          <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} />
+          <Input label="Username" name="username" value={form.username} onChange={handleChange} />
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
-            <div className="flex gap-2">
-              <Input name="email" type="email" value={form.email} className="flex-grow px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" onChange={handleChange} />
-              <button type="button" className="px-4 py-2 bg-black text-white rounded" onClick={() => alert('인증코드가 전송되었습니다.')}>
-                인증코드
-              </button>
-            </div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">Role</label>
+            <select
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <option value="user">일반 유저</option>
+              <option value="creator">크리에이터</option>
+            </select>
           </div>
-          <Input label="username" name="username" value={form.username} onChange={handleChange} />
           <ProgressButton type="submit" isLoading={loading}>가입하기</ProgressButton>
+          {passwordError && <p className="text-sm text-red-500 text-center mt-2">{passwordError}</p>}
+          {signupError && <p className="text-sm text-red-500 text-center mt-2">{signupError}</p>}
         </form>
       </div>
     </div>
@@ -91,6 +112,3 @@ function Input({ label, ...props }) {
     </div>
   );
 }
-
-
-
