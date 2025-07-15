@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	// 요청 헤더에서 토큰 꺼내기
 	private String resolveToken(HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");
-		if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {https://chatgpt.com/c/68715768-384c-8013-bcd8-60860e6d409e
+		if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7); // "Bearer " 이후 토큰만 반환하도록 설계
 		}
 		return null;
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					
 					//인증 객체 생성 
 					UsernamePasswordAuthenticationToken  authentication = 
-							new UsernamePasswordAuthenticationToken( user , null , List.of(new SimpleGrantedAuthority(user.getRole().name())));authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+							new UsernamePasswordAuthenticationToken( user , null , List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
 		                    // SecurityContext에 인증 정보 저장
 		                    SecurityContextHolder.getContext().setAuthentication(authentication);

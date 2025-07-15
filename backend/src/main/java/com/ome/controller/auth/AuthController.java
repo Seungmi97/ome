@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ome.dto.admin.response.SignupResponseDto;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
+import com.ome.dto.auth.response.SignupResponseDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.service.auth.AuthService;
 import com.ome.util.JwtUtil;
