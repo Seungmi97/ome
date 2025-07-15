@@ -8,5 +8,5 @@ import com.ome.domain.Membership;
 
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
     boolean existsByUser_Id(Long userId);
-    Optional<Membership> findByUserId(Long userId);
+    Optional<Membership> findByUser_Id(Long userId);
 }

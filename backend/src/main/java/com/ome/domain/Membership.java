@@ -9,6 +9,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +31,9 @@ public class Membership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memId;
 
-    // 🔧 User 도메인 아직 미구현이라 주석 처리 or 나중에 OneToOne 교체
-    // @OneToOne
-    // @JoinColumn(name = "user_id", nullable = false)
-    // private User user;
-
-    @Column(name = "user_id", nullable = false)
-    private Long userId;  // ← 임시 대체
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;  // ✅ 이제 Users 엔티티 참조로 변경 완료
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

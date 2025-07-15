@@ -1,36 +1,42 @@
 package com.ome.service.membership;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
-import org.springframework.stereotype.Service;
-
 import com.ome.domain.MemberState;
 import com.ome.domain.Membership;
+import com.ome.domain.Users;
 import com.ome.dto.membership.response.MembershipResponse;
+import com.ome.repository.auth.UserRepository;
 import com.ome.repository.membership.MembershipRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class MembershipService {
 
     private final MembershipRepository membershipRepository;
+    private final UserRepository userRepository;
 
-    // 🔜 UserRepository는 추후 연결
-    // private final UserRepository userRepository;
-
+    // ✅ 회원가입 이후 기본 멤버십 생성
     public void createDefaultMembership(Long userId) {
         if (membershipRepository.existsByUser_Id(userId)) return;
 
-        // 아직 User 엔티티 없음 → 임시 로직으로 대체
-        throw new UnsupportedOperationException("User 도메인 구현 후 이 메서드를 완성하세요.");
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+        Membership membership = Membership.builder()
+                .user(user)
+                .memberState(MemberState.free)
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        membershipRepository.save(membership);
     }
+
+    // ✅ 내 멤버십 정보 조회
     public MembershipResponse getMyMembership(Long userId) {
-        Membership membership = membershipRepository.findByUserId(userId)
+        Membership membership = membershipRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new IllegalArgumentException("멤버십 정보가 없습니다."));
 
         return MembershipResponse.builder()
@@ -38,24 +44,28 @@ public class MembershipService {
                 .expiredAt(membership.getExpiredAt())
                 .build();
     }
+
+    // ✅ 업그레이드: premium 전환
     public void upgradeMembership(Long userId) {
-    Membership membership = membershipRepository.findByUserId(userId)
-            .orElseThrow(() -> new IllegalArgumentException("멤버십 정보가 없습니다."));
+        Membership membership = membershipRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new IllegalArgumentException("멤버십 정보가 없습니다."));
 
-    membership.setMemberState(MemberState.premium);
-    membership.setUpdatedAt(LocalDateTime.now());
-    membership.setExpiredAt(LocalDateTime.now().plus(30, ChronoUnit.DAYS));
+        membership.setMemberState(MemberState.premium);
+        membership.setUpdatedAt(LocalDateTime.now());
+        membership.setExpiredAt(LocalDateTime.now().plusDays(30));
 
-    membershipRepository.save(membership);
-}
-public void cancelMembership(Long userId) {
-    Membership membership = membershipRepository.findByUserId(userId)
-            .orElseThrow(() -> new IllegalArgumentException("멤버십 정보가 없습니다."));
+        membershipRepository.save(membership);
+    }
 
-    membership.setMemberState(MemberState.free);
-    membership.setExpiredAt(null);  // 프리멤버는 만료일 없음
-    membership.setUpdatedAt(LocalDateTime.now());
+    // ✅ 해지 신청
+    public void cancelMembership(Long userId) {
+        Membership membership = membershipRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new IllegalArgumentException("멤버십 정보가 없습니다."));
 
-    membershipRepository.save(membership);
-}
+        membership.setMemberState(MemberState.free);
+        membership.setUpdatedAt(LocalDateTime.now());
+        membership.setExpiredAt(null);
+
+        membershipRepository.save(membership);
+    }
 }
