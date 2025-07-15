@@ -2,7 +2,7 @@ package com.ome.dto.auth.request;
 
 
 
-import com.ome.domain.Users.Role;
+import com.ome.common.enums.Role;
 
 import lombok.Builder;
 import lombok.Getter;

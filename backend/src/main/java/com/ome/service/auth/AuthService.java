@@ -5,7 +5,7 @@ import org.springframework.security.web.server.header.CacheControlServerHttpHead
 import org.springframework.stereotype.Service;
 
 import com.ome.domain.Users;
-import com.ome.domain.Users.Role;
+import com.ome.common.enums.Role;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
 import com.ome.dto.auth.response.SignupResponseDto;
