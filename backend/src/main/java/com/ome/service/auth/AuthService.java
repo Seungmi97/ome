@@ -8,7 +8,6 @@ import com.ome.domain.Users;
 import com.ome.common.enums.Role;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
-import com.ome.dto.auth.response.SignupResponseDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.util.JwtUtil;
 
@@ -25,7 +24,7 @@ public class AuthService {
 	private final JwtUtil jwtUtil;
 	
 	// 🔴 회원 가입 
-	public SignupResponseDto signup(SignupRequestDto dto) {
+	public void signup(SignupRequestDto dto) {
 		
 		// 이메일 중복 방지
 		if(repository.existsByEmail(dto.getEmail())) {
@@ -69,10 +68,6 @@ public class AuthService {
 				.build();
 		
 		repository.save(user);	
-		
-		//토큰 생성하기 
-		String token = jwtUtil.createToken(user.getUserId(),user.getRole().name());
-		return new SignupResponseDto("회원가입 성공", token);
 		
 	}
 	

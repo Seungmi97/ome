@@ -38,9 +38,9 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/check-id",
-								"/api/auth/check-email, /api/recipes/**")
+								"/api/auth/check-email")
 						.permitAll()
-						.requestMatchers("/api/**").authenticated()
+						.requestMatchers("/api/**", "/api/recipes/**").authenticated()
 						.requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 권한을 가진 사용자에게만 접근 가능
 						.requestMatchers("/creator/**").hasRole("CREATOR") // 작가 권한을 가진 사용자에게만 접근 가능
 						.anyRequest().authenticated() // USER은 여기서 처리
