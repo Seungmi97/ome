@@ -47,16 +47,10 @@ public class AuthService {
 		    throw new IllegalArgumentException("비밀번호는 6자 이상이어야 합니다.");
 		}
 
-		
-		
+			
 		Role role = Role.USER;
-		boolean approved = true;
+		boolean approved = dto.isApplyAsCreator() ? false : true; // 작가 신청하면 -> 작가 승인이 false로 됨.
 
-		// 작가 신청 시 -> 임시로 user로 표시하고 관리자 승인 대기함.
-		if (dto.isApplyAsCreator()) {
-			role = Role.USER;       
-			approved = false;        
-		}
 		
 		Users user = Users.builder()
 				.userId(dto.getUserId())
