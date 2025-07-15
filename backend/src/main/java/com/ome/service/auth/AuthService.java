@@ -75,10 +75,11 @@ public class AuthService {
 	
 	// 🔴 로그인 
 	public String login(LoginRequestDto dto) {
+		 
 		// 사용자 id 일치 여부 확인
 		Users user = repository.findByUserId(dto.getUserId())
 				.orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
-		
+		 System.out.println("DB 비번: " + user.getPassword());
 		// 패스워드 일치하는지 여부 확인 
 		if(!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
