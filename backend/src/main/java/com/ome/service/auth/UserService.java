@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 
 import com.ome.domain.Users;
 import com.ome.dto.auth.request.UserUpdateRequestDto;
-import com.ome.dto.auth.response.AdminMyPageResponseDto;
-import com.ome.dto.auth.response.CreatorMyPageResponseDto;
 import com.ome.dto.auth.response.UserInfoResponseDto;
-import com.ome.dto.auth.response.UserMyPageResponseDto;
+import com.ome.dto.mypage.response.AdminMyPageResponseDto;
+import com.ome.dto.mypage.response.CreatorMyPageResponseDto;
+import com.ome.dto.mypage.response.UserMyPageResponseDto;
 import com.ome.repository.auth.UserRepository;
 
 import lombok.RequiredArgsConstructor;

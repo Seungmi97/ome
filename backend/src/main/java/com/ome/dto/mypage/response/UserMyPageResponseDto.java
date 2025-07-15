@@ -1,4 +1,4 @@
-package com.ome.dto.auth.response;
+package com.ome.dto.mypage.response;
 
 import java.time.LocalDateTime;
 

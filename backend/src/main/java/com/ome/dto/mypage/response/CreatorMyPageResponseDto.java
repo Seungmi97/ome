@@ -1,4 +1,4 @@
-package com.ome.dto.auth.response;
+package com.ome.dto.mypage.response;
 
 
 
@@ -7,21 +7,22 @@ import com.ome.domain.Users;
 import lombok.Getter;
 
 //🌟🌟 UserService -> 권한에 따른 마이페이지 분기 
-//관리자 마이페이지 dto !!!
+// 작가 마이페이지 dto !!!
 @Getter
-public class AdminMyPageResponseDto {
+public class CreatorMyPageResponseDto {
+	
 	private String userId;
 	private String username;
 	private String email;
-	private int totlaUsers;
-	private int pendingCreators;
+	private int subscriverCount;
+	private int recipeCount;
 	
-	public AdminMyPageResponseDto(Users user) {
+	public CreatorMyPageResponseDto (Users user) {
 		this.userId = user.getUserId();
 		this.username = user.getUsername();
 		this.email = user.getEmail();
-		this.totlaUsers = 0;
-		this.pendingCreators = 0;
+		this.subscriverCount = 0;
+		this.recipeCount = 0;
 	}
 
 }
