@@ -34,6 +34,7 @@
     "globals": "^16.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
-    "vite": "^7.0.3"
+    "vite": "^7.0.3",
+    "vite-plugin-svgr": "^4.3.0"
   }
 }

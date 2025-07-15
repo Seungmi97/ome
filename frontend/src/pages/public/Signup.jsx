@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signup, login } from '@/services/authAPI';
 import { useAuth } from '@/hooks/useAuth';
-import logo from '@/assets/ome.png';
+import logo from '@/assets/ome-logo.svg';
 import ProgressButton from '@/components/ProgressButton';
 
 export default function Signup() {
