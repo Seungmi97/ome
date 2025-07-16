@@ -2,6 +2,8 @@ package com.ome.domain;
 
 import java.time.LocalDateTime;
 
+import com.ome.common.enums.MemberState;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,33 +15,32 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "membership")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Table(name = "membership")
 public class Membership {
 
-    @Id
+    @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memId;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private Users user;  // ✅ 이제 Users 엔티티 참조로 변경 완료
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private Users user;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private MemberState memberState;
+    @Column(name = "member_state", nullable = false)
+    private MemberState memberState; // FREE, PREMIUM
 
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "expired_at")
     private LocalDateTime expiredAt;
 }
+

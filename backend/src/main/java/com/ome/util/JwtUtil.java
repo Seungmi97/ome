@@ -1,11 +1,5 @@
 package com.ome.util;
 
-import io.jsonwebtoken.security.SecurityException;
-import jakarta.servlet.http.HttpServletRequest;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-
 import java.security.Key;
 import java.util.Date;
 
@@ -13,20 +7,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtUtil {
 	
 	private final Key key;
-	private final long EXPIRATION_TIME = 3600000; // 1시간 만료 시간 설정
-	
+	private final long expirationTime;
 	
 	// 생성자 -> 시크릿 키 초기화하기 
-	public JwtUtil(@Value("${jwt.secret}") String secretKey) {
+	public JwtUtil(@Value("${jwt.secret}") String secretKey , @Value("${jwt.expiration}") long expirationTime) {
 		this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		this.expirationTime = expirationTime;
 	}
 	
 	
@@ -36,7 +35,7 @@ public class JwtUtil {
 		claims.put("role", role);
 		
 		Date now = new Date();
-		Date expiry = new Date(now.getTime() + EXPIRATION_TIME);
+		Date expiry = new Date(now.getTime() + expirationTime);
 		return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -77,9 +76,11 @@ public class JwtUtil {
         } catch (SecurityException | MalformedJwtException |
                  ExpiredJwtException | UnsupportedJwtException |
                  IllegalArgumentException e) {
+        	 System.out.println("❌ JWT 검증 실패: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             return false;
         }
     }
+	
 	// 토큰값만 가져오기
 	public String resolveToken(HttpServletRequest request) {
 	    String bearerToken = request.getHeader("Authorization");
