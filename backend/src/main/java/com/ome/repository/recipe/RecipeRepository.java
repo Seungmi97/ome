@@ -3,6 +3,7 @@ package com.ome.repository.recipe;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,6 +24,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 	 * @param pageable
 	 * @return
 	 */
+	@EntityGraph(attributePaths = "writer") //fetch 조인을 어노테이션으로 사용할 수 있게함
     @Query("""
             SELECT r FROM Recipe r
             WHERE 
