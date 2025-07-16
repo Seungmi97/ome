@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ome.domain.Users;
 import com.ome.repository.auth.UserRepository;
+import com.ome.service.auth.CustomUserDetails;
 import com.ome.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
@@ -49,18 +50,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				
 				Optional<Users> optionalUser = userRepository.findByUserId(userId);
 				
-				if(optionalUser.isPresent()) {
-					Users user = optionalUser.get();
-					
-					//인증 객체 생성 
-					UsernamePasswordAuthenticationToken  authentication = 
-							new UsernamePasswordAuthenticationToken( user , null , List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				if (optionalUser.isPresent()) {
+				    Users user = optionalUser.get();
+				    CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
-		                    // SecurityContext에 인증 정보 저장
-		                    SecurityContextHolder.getContext().setAuthentication(authentication);
-		                }
-		            }
-		        } catch (Exception ex) {
+				    UsernamePasswordAuthenticationToken authentication =
+				        new UsernamePasswordAuthenticationToken(
+				            customUserDetails,
+				            null,
+				            customUserDetails.getAuthorities()
+				        );
+
+				    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				    SecurityContextHolder.getContext().setAuthentication(authentication);
+				}}}catch (Exception ex) {
 		            // JWT 예외 발생 시 로그 남기고 인증 안된 상태 유지
 		            logger.error("Could not set user authentication in security context", ex);
 		        }
