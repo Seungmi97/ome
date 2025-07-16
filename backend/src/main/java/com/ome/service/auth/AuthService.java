@@ -8,7 +8,6 @@ import com.ome.domain.Users;
 import com.ome.common.enums.Role;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
-import com.ome.dto.auth.response.SignupResponseDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.util.JwtUtil;
 
@@ -25,7 +24,7 @@ public class AuthService {
 	private final JwtUtil jwtUtil;
 	
 	// 🔴 회원 가입 
-	public SignupResponseDto signup(SignupRequestDto dto) {
+	public void signup(SignupRequestDto dto) {
 		
 		// 이메일 중복 방지
 		if(repository.existsByEmail(dto.getEmail())) {
@@ -48,16 +47,10 @@ public class AuthService {
 		    throw new IllegalArgumentException("비밀번호는 6자 이상이어야 합니다.");
 		}
 
-		
-		
+			
 		Role role = Role.USER;
-		boolean approved = true;
+		boolean approved = dto.isApplyAsCreator() ? false : true; // 작가 신청하면 -> 작가 승인이 false로 됨.
 
-		// 작가 신청 시 -> 임시로 user로 표시하고 관리자 승인 대기함.
-		if (dto.isApplyAsCreator()) {
-			role = Role.USER;       
-			approved = false;        
-		}
 		
 		Users user = Users.builder()
 				.userId(dto.getUserId())
@@ -70,20 +63,17 @@ public class AuthService {
 		
 		repository.save(user);	
 		
-		//토큰 생성하기 
-		String token = jwtUtil.createToken(user.getUserId(),user.getRole().name());
-		return new SignupResponseDto("회원가입 성공", token);
-		
 	}
 	
 	
 	
 	// 🔴 로그인 
 	public String login(LoginRequestDto dto) {
+		 
 		// 사용자 id 일치 여부 확인
 		Users user = repository.findByUserId(dto.getUserId())
 				.orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
-		
+		 System.out.println("DB 비번: " + user.getPassword());
 		// 패스워드 일치하는지 여부 확인 
 		if(!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
