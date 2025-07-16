@@ -14,6 +14,8 @@ import Unauthorized from '@/pages/public/Unauthorized';
 import UserMainpage from "@/pages/user/UserMainpage";
 import CreatorMainpage from "@/pages/creator/CreatorMainpage";
 
+import RecipeDetail from "@/pages/public/RecipeDetail";
+
 export default function App() {
   return (
     <Routes>
