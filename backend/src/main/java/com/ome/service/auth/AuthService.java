@@ -5,6 +5,7 @@ import org.springframework.security.web.server.header.CacheControlServerHttpHead
 import org.springframework.stereotype.Service;
 
 import com.ome.domain.Users;
+import com.ome.common.enums.CreatorStatus;
 import com.ome.common.enums.Role;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
@@ -50,7 +51,7 @@ public class AuthService {
 			
 		Role role = Role.USER;
 		boolean approved = dto.isApplyAsCreator() ? false : true; // 작가 신청하면 -> 작가 승인이 false로 됨.
-
+		CreatorStatus creatorStatus = dto.isApplyAsCreator() ? CreatorStatus.PENDING : CreatorStatus.APPROVED;
 		
 		Users user = Users.builder()
 				.userId(dto.getUserId())
@@ -59,6 +60,7 @@ public class AuthService {
 				.password(passwordEncoder.encode(dto.getPassword())) // 비밀번호 암호화
 				.role(role) // ROLE_USER와 ROLE_CREATOR만 허용
 				.approved(approved) // 작가 승인 default 값으로 false 지정
+				.creatorStatus(creatorStatus) 
 				.build();
 		
 		repository.save(user);	
