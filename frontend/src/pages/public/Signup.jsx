@@ -16,6 +16,7 @@ export default function Signup() {
     email: '',
     username: '',
     role: 'user',
+    applyAsCreator: false, // 크리에이터 신청 여부
   });
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState(''); // 비밀번호 불일치 에러 메시지
@@ -45,6 +46,7 @@ export default function Signup() {
         email: form.email,
         username: form.username,
         role: form.role,
+        applyAsCreator: form.role === 'creator' ? 'true' : 'false', // 크리에이터 신청 여부
       });
 
       const res = await login({ id: form.id, password: form.password });
