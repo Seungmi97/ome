@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 
 const menuItems = [
   { name: '통계 시스템', path: '/admin/dashboard', icon: '📊' },
-  { name: '승인 관리', path: '/admin/approval', icon: '📝' },
+  { name: '승인 관리', path: '/admin/approve-manage', icon: '📝' },
+  { name: '유저 관리', path: '/admin/user-manage', icon: '👥' },
   { name: '신고 관리', path: '/admin/report', icon: '🚨' },
   { name: '작가 평가', path: '/admin/review', icon: '🧑‍🍳' },
   { name: '레시피 목록', path: '/admin/recipes', icon: '🧾' },
@@ -21,7 +22,7 @@ export default function AdminSidebar() {
         {menuItems.map((item) => (
           <Link
             key={item.path}
-            to={item.path}
+            to={item.path} // 페이지 이동을 위한 링크
             className={`block px-4 py-2 rounded hover:bg-gray-700 ${
               location.pathname === item.path ? 'bg-gray-700' : ''
             }`}
