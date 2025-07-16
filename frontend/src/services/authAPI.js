@@ -28,6 +28,6 @@ export const logout = () => api.post('/auth/logout');
 
 /**st
  * 로그인한 유저 정보 조회
- * @returns {Promise<import('@/types/User').User>}
+ * @returns {Promise<import('../types/user').User>}
  */
 export const getMyProfile = () => api.get('/users/me'); 
