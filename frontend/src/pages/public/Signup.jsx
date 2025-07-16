@@ -10,7 +10,7 @@ export default function Signup() {
   const { login: doLogin } = useAuth();
 
   const [form, setForm] = useState({
-    id: '',
+    user_id: '',
     password: '',
     passwordConfirm: '',
     email: '',
@@ -41,7 +41,7 @@ export default function Signup() {
     setLoading(true);
     try {
       await signup({
-        id: form.id,
+        user_id: form.user_id,
         password: form.password,
         email: form.email,
         username: form.username,
@@ -49,8 +49,9 @@ export default function Signup() {
         applyAsCreator: form.role === 'creator' ? 'true' : 'false', // 크리에이터 신청 여부
       });
 
-      const res = await login({ id: form.id, password: form.password });
-      await doLogin({ accessToken: res.data.accessToken });
+      const res = await login({ user_id: form.user_id, password: form.password });
+      const token = res.data.token;  // 서버에서 받은 토큰
+      await doLogin({ accessToken: token });
       navigate('/user/home');
     } catch (err) {
       if (err.response && err.response.data) {
@@ -76,7 +77,7 @@ export default function Signup() {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <Input label="ID" name="id" value={form.id} onChange={handleChange} />
+          <Input label="ID" name="user_id" value={form.user_id} onChange={handleChange} />
           <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} />
           <Input label="Password Confirm" name="passwordConfirm" type="password" value={form.passwordConfirm} onChange={handleChange} />
           

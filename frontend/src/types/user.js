@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} User
- * @property {string} id
+ * @property {string} user_id
  * @property {string} password
  * @property {string} username
  * @property {string} email

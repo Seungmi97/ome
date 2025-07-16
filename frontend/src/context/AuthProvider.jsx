@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(
     async ({ accessToken }) => {
-      setAccessToken(accessToken);
       localStorage.setItem('accessToken', accessToken);
+      setAccessToken(accessToken);
       await fetchUserProfile();
     },
     [fetchUserProfile]
