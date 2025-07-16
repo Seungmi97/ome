@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ome.dto.admin.response.SignupResponseDto;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
+import com.ome.dto.auth.response.LoginResponseDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.service.auth.AuthService;
 import com.ome.util.JwtUtil;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 // 🌟🌟 회원 가입 , 로그인 , 로그아웃 , 사용자 id 및 이메일 중복 확인 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000") // 🌟🌟🌟 일단 임시 기본 리액트 포트로 지정함 (나중에 맞추기!!)
+@CrossOrigin(origins = "http://localhost:5173") // 🌟🌟🌟 일단 임시 기본 리액트 포트로 지정함 (나중에 맞추기!!)
 @RequiredArgsConstructor
 public class AuthController {
 	
@@ -33,8 +33,8 @@ public class AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> singup(@RequestBody SignupRequestDto request) {
 
-		SignupResponseDto response = authService.signup(request);
-		return ResponseEntity.ok(response);
+		authService.signup(request);
+		return ResponseEntity.ok("회원가입 성공");
 	}
 	
 	// 🔴 로그인
@@ -43,7 +43,7 @@ public class AuthController {
 		String token  = authService.login(request);
 		// JWT 토큰을 헤더에 담아 응답하기 
 		response.setHeader("Authorization", "Bearer " + token);
-		return ResponseEntity.ok("로그인 성공");
+		return ResponseEntity.ok(new LoginResponseDto("로그인 성공",token));
 	}
 	
 	// 🔴 로그아웃 
