@@ -1,49 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import RecipeCard from './RecipeCard';
-
-const dummyData = [
-    { title: '야메 야끼우동', price: '$ Free' },
-    { title: '돈부리 덮밥', price: '$ Free' },
-    { title: '간장계란 밥 (초간단)', price: '$ Free' },
-    { title: '스폰지 밥', price: '$ Platinum' },
-    { title: '고래밥', price: '$ Platinum' },
-    { title: '캐비어 스시', price: '$ Platinum' },
-    { title: '야메 야끼우동', price: '$ Free' },
-    { title: '돈부리 덮밥', price: '$ Free' },
-    { title: '간장계란 밥 (초간단)', price: '$ Free' },
-    { title: '스폰지 밥', price: '$ Platinum' },
-    { title: '고래밥', price: '$ Platinum' },
-    { title: '캐비어 스시', price: '$ Platinum' },
-    { title: '야메 야끼우동', price: '$ Free' },
-    { title: '돈부리 덮밥', price: '$ Free' },
-    { title: '간장계란 밥 (초간단)', price: '$ Free' },
-    { title: '스폰지 밥', price: '$ Platinum' },
-    { title: '고래밥', price: '$ Platinum' },
-    { title: '캐비어 스시', price: '$ Platinum' },
-    { title: '야메 야끼우동', price: '$ Free' },
-    { title: '돈부리 덮밥', price: '$ Free' },
-    { title: '간장계란 밥 (초간단)', price: '$ Free' },
-    { title: '스폰지 밥', price: '$ Platinum' },
-    { title: '고래밥', price: '$ Platinum' },
-    { title: '캐비어 스시', price: '$ Platinum' },
-    { title: '야메 야끼우동', price: '$ Free' },
-    { title: '돈부리 덮밥', price: '$ Free' },
-    { title: '간장계란 밥 (초간단)', price: '$ Free' },
-    { title: '스폰지 밥', price: '$ Platinum' },
-    { title: '고래밥', price: '$ Platinum' },
-    { title: '캐비어 스시', price: '$ Platinum' },
-];
+import SkeletonCard from './SkeletonCard';
+import { getRecipeList } from '@/services/recipeAPI';
 
 const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) => {
   const [inputValue, setInputValue] = useState('');
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const filteredData = keywords.length === 0
-    ? dummyData
-    : dummyData.filter(item =>
-        keywords.some(k => item.title.toLowerCase().includes(k.toLowerCase()))
-      );
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        setLoading(true);
 
-  const visibleData = filteredData.slice(0, visibleCount);
+        const params = {
+          offset: 0,
+          limit: visibleCount,
+          keywords: keywords.join(','),
+        };
+
+        const response = await getRecipeList(params);
+        setRecipes(response.data?.content || []);
+      } catch (err) {
+        console.error('레시피 목록 불러오기 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipes();
+  }, [keywords, visibleCount]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && inputValue.trim()) {
@@ -69,15 +55,37 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
         />
       </div>
 
-      {/* 카드 목록 */}
+      {/* 카드 목록 or 스켈레톤 */}
       <div className="flex flex-wrap gap-6">
-        {visibleData.map((item, idx) => (
-          <RecipeCard key={idx} title={item.title} price={item.price} />
-        ))}
+        {/* 🔧 테스트용 더미 카드 */}
+        <RecipeCard
+          id="dummy-id"
+          title="더미 레시피"
+          imageUrl="/src/assets/food.jpg"
+          isPremium={false}
+          bookmarkCount={123}
+        />
+
+        {loading ? (
+          Array.from({ length: 8 }).map((_, idx) => <SkeletonCard key={idx} />)
+        ) : recipes.length > 0 ? (
+          recipes.map((item) => (
+            <RecipeCard
+              key={item.id}
+              id={item.id}
+              title={item.title}
+              imageUrl={item.imageUrl}
+              isPremium={item.isPremium}
+              bookmarkCount={item.bookmarkCount || 0}
+            />
+          ))
+        ) : (
+          <p className="text-center text-gray-500">레시피가 없습니다.</p>
+        )}
       </div>
 
-      {/* 더보기 버튼 */}
-      {visibleCount < filteredData.length && (
+      {/* 더보기 */}
+      {!loading && recipes.length >= visibleCount && (
         <div className="mt-6 text-center">
           <button
             onClick={() => setVisibleCount((v) => v + 20)}

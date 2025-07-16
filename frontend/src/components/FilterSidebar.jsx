@@ -11,7 +11,6 @@ const FilterSidebar = ({ keywords = [], onRemoveKeyword, onReset }) => {
       {/* 타이틀 */}
       <div className="flex items-center justify-between">
         <span className="text-lg font-semibold">OME</span>
-        <span className="text-gray-500 dark:text-gray-400 text-sm">▾</span>
       </div>
 
       {/* 메뉴 */}

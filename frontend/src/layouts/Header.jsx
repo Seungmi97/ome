@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '@/assets/ome.png';
+import logo from '@/assets/ome-logo.svg';
 import { useAuth } from '@/hooks/useAuth';
 
 const Header = ({ onReset }) => {
@@ -26,7 +26,7 @@ const Header = ({ onReset }) => {
       <div className="px-6 py-4 flex items-center justify-between">
         {/* 로고 */}
         <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer" onClick={handleLogoClick}>
-          <img src={logo} alt="OME 로고" className="h-16 w-auto" />
+          <img src={logo} alt="OME 로고" className="h-16 w-auto invert-0 dark:invert"/>
         </div>
 
         {/* 우측 버튼 */}
