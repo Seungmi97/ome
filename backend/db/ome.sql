@@ -1,139 +1,151 @@
-DROP DATABASE IF EXISTS ome;
-CREATE DATABASE IF NOT EXISTS ome DEFAULT CHARACTER SET utf8mb4;
-USE ome;
+DROP DATABASE IF EXISTS OME;
+CREATE DATABASE OME;
+USE OME;
 
-DROP TABLE IF EXISTS answer;
-DROP TABLE IF EXISTS question;
-DROP TABLE IF EXISTS report;
-DROP TABLE IF EXISTS media;
-DROP TABLE IF EXISTS bookmark;
-DROP TABLE IF EXISTS comment;
-DROP TABLE IF EXISTS review;
-DROP TABLE IF EXISTS node;
-DROP TABLE IF EXISTS payment;
-DROP TABLE IF EXISTS membership;
-DROP TABLE IF EXISTS users;
 
--- Users
-CREATE TABLE users (
-  user_id       BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  login_id      VARCHAR(50)  NOT NULL UNIQUE,
-  password      VARCHAR(255) NOT NULL,
-  email         VARCHAR(100) NOT NULL,
-  name          VARCHAR(50)  NOT NULL,
-  nickname      VARCHAR(50)  NOT NULL,
-  role          VARCHAR(20)  NOT NULL DEFAULT 'USER',
-  status        VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- 사용자 정보
+CREATE TABLE Users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(100) NOT NULL UNIQUE,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(200) NOT NULL,
+    email VARCHAR(200) NOT NULL,
+    role ENUM('ADMIN','CREATOR','USER') NOT NULL DEFAULT 'USER',
+    approved BOOLEAN DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Membership
-CREATE TABLE membership (
-  member_id     BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  user_id       BIGINT       NOT NULL,
-  start_date    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  expired_at    DATETIME     DEFAULT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- 레시피
+CREATE TABLE Recipe (
+    recipe_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    creator_id BIGINT NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    content TEXT,
+    is_premium ENUM('free','premium') NOT NULL,
+    category ENUM('korean','western','japanese','chineses','dessert','vegan','etc') NOT NULL,
+    ingredients TEXT,
+    reported BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (creator_id) REFERENCES Users(id) ON DELETE CASCADE
 );
 
--- Payment
-CREATE TABLE payment (
-  payment_id    BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  user_id       BIGINT       NOT NULL,
-  method        VARCHAR(20)  NOT NULL,
-  price         INT          NOT NULL,
-  is_paid       BOOLEAN      NOT NULL DEFAULT FALSE,
-  paid_at       DATETIME     DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- 미디어 정보
+CREATE TABLE Media (
+    media_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    target_id BIGINT NOT NULL,
+    target_type ENUM('RECIPE','REVIEW') NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    seq BIGINT,
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Node
-CREATE TABLE node (
-  node_id       BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  user_id       BIGINT       NOT NULL,
-  title         VARCHAR(255) NOT NULL,
-  content       TEXT         NOT NULL,
-  keywords      TEXT,
-  type          VARCHAR(30),
-  is_public     BOOLEAN      NOT NULL DEFAULT FALSE,
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- 댓글
+CREATE TABLE Comment (
+    comment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    recipe_id BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    parent_id BIGINT DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES Comment(comment_id) ON DELETE CASCADE
 );
 
--- Review
-CREATE TABLE review (
-  review_id     BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  node_id       BIGINT       NOT NULL,
-  user_id       BIGINT       NOT NULL,
-  content       TEXT         NOT NULL,
-  score         INT,
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (node_id) REFERENCES node(node_id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- 구독 정보
+CREATE TABLE Subscription (
+    sub_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    creator_id BIGINT NOT NULL,
+    start_date DATETIME NOT NULL,
+    end_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES Users(id) ON DELETE CASCADE
 );
 
--- Comment
-CREATE TABLE comment (
-  comment_id    BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  node_id       BIGINT       NOT NULL,
-  user_id       BIGINT       NOT NULL,
-  content       TEXT         NOT NULL,
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (node_id) REFERENCES node(node_id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- 멤버십 정보
+CREATE TABLE Membership (
+    mem_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    member_state ENUM('premium','free') NOT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    expired_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
 );
 
--- Bookmark
-CREATE TABLE bookmark (
-  bookmark_id   BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  user_id       BIGINT       NOT NULL,
-  node_id       BIGINT       NOT NULL,
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-  FOREIGN KEY (node_id) REFERENCES node(node_id) ON DELETE CASCADE
+-- 결제
+CREATE TABLE Payment (
+    payment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    creator_id BIGINT NOT NULL,
+    amount INT NOT NULL,
+    method VARCHAR(50) NOT NULL,
+    status ENUM('PAID','FAILED','CANCELLED') NOT NULL,
+    pg_tid VARCHAR(100),
+    paid_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES Users(id) ON DELETE CASCADE
 );
 
--- Media
-CREATE TABLE media (
-  media_id      BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  node_id       BIGINT       NOT NULL,
-  file_path     VARCHAR(255) NOT NULL,
-  type          VARCHAR(50),
-  uploaded_at   DATETIME     DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (node_id) REFERENCES node(node_id) ON DELETE CASCADE
+-- 질문
+CREATE TABLE Question (
+	question_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    recipe_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    content TEXT NOT NULL,
+    is_secret BOOLEAN DEFAULT FALSE,
+    status ENUM('WAITING','ANSWERED') DEFAULT 'WAITING',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
 );
 
--- Report
-CREATE TABLE report (
-  report_id     BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  reporter_id   BIGINT       NOT NULL,
-  target_id     BIGINT       NOT NULL,
-  target_type   VARCHAR(50)  NOT NULL,
-  reason        TEXT,
-  created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (reporter_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- 답변
+CREATE TABLE Answer (
+    answer_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    question_id BIGINT NOT NULL,
+    creator_id BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (question_id) REFERENCES Question(question_id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES Users(id) ON DELETE CASCADE
 );
 
--- Question
-CREATE TABLE question (
-  question_id   BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  user_id       BIGINT       NOT NULL,
-  title         VARCHAR(255) NOT NULL,
-  content       TEXT         NOT NULL,
-  is_private    BOOLEAN      NOT NULL DEFAULT FALSE,
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- 신고
+CREATE TABLE Report (
+    report_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    target_id BIGINT NOT NULL,
+    target_type ENUM('RECIPE','COMMENT','USER') NOT NULL,
+    reason TEXT NOT NULL,
+    status ENUM('PENDING','APPROVED','REJECTED') DEFAULT 'PENDING',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
 );
 
--- Answer
-CREATE TABLE answer (
-  answer_id     BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  question_id   BIGINT       NOT NULL,
-  user_id       BIGINT       NOT NULL,
-  content       TEXT         NOT NULL,
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- 찜 (북마크)
+CREATE TABLE Bookmark (
+    bookmark_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    recipe_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id) ON DELETE CASCADE
+);
+
+-- 후기
+CREATE TABLE Review (
+    review_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    recipe_id BIGINT NOT NULL,
+    creator_id BIGINT NOT NULL,
+    comment TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id) ON DELETE CASCADE
 );
