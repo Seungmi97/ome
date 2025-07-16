@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000") // 🌟🌟🌟 일단 임시 기본 리액트 포트로 지정함 (나중에 맞추기!!)
+@CrossOrigin(origins = "http://localhost:5173") // 🌟🌟🌟 일단 임시 기본 리액트 포트로 지정함 (나중에 맞추기!!)
 @RequiredArgsConstructor
 public class UserController {
 	
