@@ -1,4 +1,3 @@
-
 /**
  * @typedef {Object} User
  * @property {string} id
