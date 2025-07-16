@@ -2,7 +2,7 @@ package com.ome.dto.membership.response;
 
 import java.time.LocalDateTime;
 
-import com.ome.domain.MemberState;
+import com.ome.common.enums.MemberState;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

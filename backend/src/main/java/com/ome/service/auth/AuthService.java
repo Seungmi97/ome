@@ -1,17 +1,16 @@
 package com.ome.service.auth;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.header.CacheControlServerHttpHeadersWriter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.ome.domain.Users;
 import com.ome.common.enums.Role;
+import com.ome.domain.Users;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
 import com.ome.repository.auth.UserRepository;
+import com.ome.service.membership.MembershipService;
 import com.ome.util.JwtUtil;
-
-// 회원가입 , 로그인 , 로그아웃 , 인증 관련 동작 구현 
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,9 +20,11 @@ public class AuthService {
 	
 	private final UserRepository repository;
 	private final PasswordEncoder passwordEncoder;
+	private final MembershipService membershipService;
 	private final JwtUtil jwtUtil;
 	
 	// 🔴 회원 가입 
+	@Transactional
 	public void signup(SignupRequestDto dto) {
 		
 		// 이메일 중복 방지
@@ -60,8 +61,10 @@ public class AuthService {
 				.role(role) // ROLE_USER와 ROLE_CREATOR만 허용
 				.approved(approved) // 작가 승인 default 값으로 false 지정
 				.build();
+				
 		
-		repository.save(user);	
+		Users savedUser = repository.save(user); 
+        membershipService.createDefaultMembership(savedUser.getId());
 		
 	}
 	
