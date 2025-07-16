@@ -15,5 +15,5 @@ public interface MediaRepository extends JpaRepository<Media, Long>{
     List<Media> findByTargetTypeAndTargetIdOrderBySeqAsc(TargetType targetType, Long targetId);
 
     // 특정 레시피에 연결된 미디어 모두 삭제
-    void deleteByTargetTypeAndTargetId(TargetType targetType, Long targetId);
+    void deleteAllByTargetTypeAndTargetId(TargetType targetType, Long targetId);
 }
