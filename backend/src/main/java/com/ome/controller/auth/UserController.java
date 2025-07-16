@@ -1,6 +1,5 @@
 package com.ome.controller.auth;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,6 @@ import com.ome.dto.auth.response.UserInfoResponseDto;
 import com.ome.service.auth.UserService;
 import com.ome.util.JwtUtil;
 
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
