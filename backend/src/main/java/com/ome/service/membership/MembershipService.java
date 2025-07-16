@@ -22,6 +22,29 @@ public class MembershipService {
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 초기 멤버십 생성 (등급 지정 가능)
+     */
+    @Transactional
+    public void createInitialMembership(Long userId, MemberState memberState) {
+        if (membershipRepository.existsByUserId(userId)) return;
+
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+        Membership.MembershipBuilder builder = Membership.builder()
+                .user(user)
+                .memberState(memberState)
+                .updatedAt(LocalDateTime.now());
+
+        // ⭐ 만약 프리미엄 등급으로 생성하는 경우, 만료일도 설정
+        if (memberState == MemberState.premium) {
+            builder.expiredAt(LocalDateTime.now().plusDays(30));
+        }
+
+        membershipRepository.save(builder.build());
+    }
+
     // ✅ 회원가입 이후 기본 멤버십 생성
     @Transactional
     public void createDefaultMembership(Long userId) {

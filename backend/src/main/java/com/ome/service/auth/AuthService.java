@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ome.common.enums.MemberState;
 import com.ome.common.enums.Role;
 import com.ome.domain.Users;
 import com.ome.dto.auth.request.LoginRequestDto;
@@ -49,8 +50,8 @@ public class AuthService {
 		}
 
 			
-		Role role = Role.USER;
-		boolean approved = dto.isApplyAsCreator() ? false : true; // 작가 신청하면 -> 작가 승인이 false로 됨.
+		Role role = dto.isApplyAsCreator() ? Role.CREATOR : Role.USER;
+        boolean approved = !dto.isApplyAsCreator(); // 작가 신청하면 -> 작가 승인이 false로 됨.
 
 		
 		Users user = Users.builder()
@@ -64,9 +65,14 @@ public class AuthService {
 				
 		
 		Users savedUser = repository.save(user); 
-        membershipService.createDefaultMembership(savedUser.getId());
+        if (dto.isApplyAsCreator()) {
+            membershipService.createInitialMembership(savedUser.getId(), MemberState.premium);
+        } else {
+            membershipService.createInitialMembership(savedUser.getId(), MemberState.free);
+        }
+    }
 		
-	}
+	
 	
 	
 	
