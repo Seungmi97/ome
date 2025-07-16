@@ -46,7 +46,7 @@ public class SecurityConfig {
 								"/api/auth/check-email", "/api/recipes/**")
 
 						.permitAll()
-						.requestMatchers("/api/**", "/api/recipes/**").authenticated()
+						.requestMatchers("/api/**", "/api/recipes/**", "/api/auth/logout").authenticated()
 						.requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 권한을 가진 사용자에게만 접근 가능
 						.requestMatchers("/creator/**").hasRole("CREATOR") // 작가 권한을 가진 사용자에게만 접근 가능
 						.anyRequest().authenticated() // USER은 여기서 처리
@@ -65,7 +65,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("https://jaybee-dev.app", "http://localhost:3000"));
+		config.setAllowedOrigins(List.of("https://jaybee-dev.app", "http://localhost:5173"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
 		config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
 		config.setAllowCredentials(true);
