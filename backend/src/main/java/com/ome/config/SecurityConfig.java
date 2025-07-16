@@ -43,9 +43,10 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/check-id",
-								"/api/auth/check-email")
+								"/api/auth/check-email", "/api/recipes/**")
+
 						.permitAll()
-						.requestMatchers("/api/**", "/api/recipes/**","/api/auth/logout").authenticated()
+						.requestMatchers("/api/**", "/api/recipes/**", "/api/auth/logout").authenticated()
 						.requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 권한을 가진 사용자에게만 접근 가능
 						.requestMatchers("/creator/**").hasRole("CREATOR") // 작가 권한을 가진 사용자에게만 접근 가능
 						.anyRequest().authenticated() // USER은 여기서 처리
@@ -59,20 +60,20 @@ public class SecurityConfig {
 
 		return http.build();
 	}
-	
-	//cors 설정 추가하기
-	@Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://jaybee-dev.app", "http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
-        config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+	// cors 설정 추가하기
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("https://jaybee-dev.app", "http://localhost:5173"));
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+		config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+		config.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+		return source;
+	}
 
 	// 로그인 요청 시 인증 수행
 	@Bean

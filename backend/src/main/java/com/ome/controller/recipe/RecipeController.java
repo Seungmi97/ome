@@ -9,9 +9,12 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -20,11 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Sort;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ome.common.enums.Category;
 import com.ome.common.enums.PremiumType;
 import com.ome.common.enums.Role;
 import com.ome.dto.recipe.request.RecipeRequestDto;
+import com.ome.dto.recipe.request.RecipeUpdateDto;
 import com.ome.dto.recipe.response.RecipeDetailDto;
 import com.ome.dto.recipe.response.RecipeResponseDto;
 import com.ome.service.recipe.RecipeService;
@@ -98,10 +103,54 @@ public class RecipeController {
     @GetMapping("/{recipeId}")
     public ResponseEntity<?> getRecipeDetail(@PathVariable Long recipeId, @AuthenticationPrincipal CustomUserDetails user) {
         Long userId = user.getId();
-        RecipeDetailDto detail  = recipeService.getRecipeDetail(recipeId, userId);
+        RecipeDetailDto detail  = recipeService.getRecipeDetail(userId, recipeId);
         return ResponseEntity.ok(detail);
     }
     
+    
+    /**
+     * 레시피 수정
+     * @param recipeId
+     * @param user
+     * @param dto
+     * @param images
+     * @return
+     */
+    @PatchMapping("/{recipeId}")
+    public ResponseEntity<?> updateRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestPart("data") String json,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+    	
+    	RecipeUpdateDto dto; 
+        try { 
+            ObjectMapper objectMapper = new ObjectMapper();  
+            dto = objectMapper.readValue(json, RecipeUpdateDto.class); //data타입을 text로 받기 위해 수동 파싱
+        } catch (JsonProcessingException e) {
+            // 파싱 실패 시 예외 응답 반환
+            return ResponseEntity.badRequest().body("JSON 파싱 실패: " + e.getMessage());
+        }
+
+        recipeService.updateRecipe(user.getId(), recipeId, dto, files);
+        return ResponseEntity.ok("레시피 수정 완료");
+    }
+    
+    
+    /**
+     * 레시피 삭제
+     * @param recipeId
+     * @param user
+     * @return
+     */
+    @DeleteMapping("/{recipeId}")
+    public ResponseEntity<?> deleteRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal CustomUserDetails user) {
+    	
+        recipeService.deleteRecipe(user.getId(), recipeId);
+        return ResponseEntity.ok("레시피 삭제 완료");
+    }
 
 
     
