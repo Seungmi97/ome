@@ -6,7 +6,10 @@ import AdminDashboardLayout from "@/layouts/AdminDashboardLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import ApproveManage from "@/pages/admin/ApproveManage";
 import UserManage from "@/pages/admin/UserManage";
-
+import ReportManage from "@/pages/admin/ReportManage";
+import CommentManage from "@/pages/admin/CommentManage";
+import RecipeManage from "@/pages/admin/RecipeManage";
+import QnAManage from "@/pages/admin/QnAManage";
 import Unauthorized from '@/pages/public/Unauthorized';
 import UserMainpage from "@/pages/user/UserMainpage";
 import CreatorMainpage from "@/pages/creator/CreatorMainpage";
@@ -34,7 +37,11 @@ export default function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="approve-manage" element={<ApproveManage />} />
+          <Route path="report" element={<ReportManage />} />
+          <Route path="comment-manage" element={<CommentManage />} />
           <Route path="user-manage" element={<UserManage />} />
+          <Route path="qna" element={<QnAManage />} />
+          <Route path="recipes" element={<RecipeManage />} />
           {/* 관리자 메뉴별로 추가 */}
         </Route>
       </Route>

@@ -6,10 +6,9 @@ const menuItems = [
   { name: '승인 관리', path: '/admin/approve-manage', icon: '📝' },
   { name: '유저 관리', path: '/admin/user-manage', icon: '👥' },
   { name: '신고 관리', path: '/admin/report', icon: '🚨' },
-  { name: '작가 평가', path: '/admin/review', icon: '🧑‍🍳' },
+  { name: '댓글 관리', path: '/admin/comment-manage', icon: '💬' },
   { name: '레시피 목록', path: '/admin/recipes', icon: '🧾' },
   { name: 'Q&A 응답', path: '/admin/qna', icon: '📮' },
-  { name: '관리자 설정', path: '/admin/settings', icon: '⚙️' },
 ];
 
 export default function AdminSidebar() {
