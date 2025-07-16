@@ -2,7 +2,7 @@ import api from './api';
 
 /**
  * 내 프로필 정보 가져오기
- * @returns {Promise<import('@/types/user').User>}
+ * @returns {Promise<import('@/types/User').User>}
  */
 export const getUserProfile = () => api.get('/user/me');
 

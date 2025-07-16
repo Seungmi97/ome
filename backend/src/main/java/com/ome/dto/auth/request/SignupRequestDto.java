@@ -2,7 +2,6 @@ package com.ome.dto.auth.request;
 
 
 
-import com.ome.domain.Users.Role;
 
 import lombok.Getter;
 
@@ -12,7 +11,6 @@ public class SignupRequestDto {
 	private String username;
 	private String password;
 	private String email;
-	private Role role;
-	
+	private boolean applyAsCreator;
 
 }

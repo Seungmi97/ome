@@ -1,14 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-    <script src="https://cdn.iamport.kr/v2/iamport.js"></script> <!-- 포트원 스크립트 추가 -->
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OME</title>
+  <script>
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = localStorage.theme;
+    document.documentElement.setAttribute(
+      'data-theme',
+      theme === 'dark' || (!theme && prefersDark) ? 'dark' : 'light'
+    );
+  </script>
+</head>
+
+<body>
+  <div id="root" class="bg-white dark:bg-black"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>

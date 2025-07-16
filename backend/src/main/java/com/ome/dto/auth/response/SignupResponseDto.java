@@ -1,4 +1,4 @@
-package com.ome.dto.admin.response;
+package com.ome.dto.auth.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
