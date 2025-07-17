@@ -6,8 +6,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -51,7 +53,6 @@ public class RecipeService {
 
 	/**
 	 * 레시피 등록
-	 * 
 	 * @param id
 	 * @param dto
 	 * @param files
@@ -121,23 +122,40 @@ public class RecipeService {
 	}
 
 	/**
-	 * 레시피 전체 목록 조회(검색, 필터링, 페이징)
-	 * 
+	 * 레시피 전체 목록 조회(검색, 필터링, 페이징, 썸네일 이미지 포함)
 	 * @param keyword
 	 * @param category
 	 * @param isPremium
 	 * @param pageable
 	 * @return
 	 */
-	public Page<RecipeResponseDto> getAllRecipes(String keyword, Category category, PremiumType isPremium,
-			Pageable pageable) {
+	public Page<RecipeResponseDto> getAllRecipes(String keyword, Category category, PremiumType isPremium, Pageable pageable) {
+		
 		Page<Recipe> recipes = recipeRepository.getAllRecipes(keyword, category, isPremium, pageable);
-		return recipes.map(RecipeResponseDto::from); // 각 레시피를 DTO로 변환
+		
+		// 전체 recipeId 수집
+	    List<Long> recipeIds = recipes.stream()
+	        .map(Recipe::getRecipeId)
+	        .toList();
+
+	    // 한 번에 Media 전체 조회
+	    List<Media> allMedia = mediaRepository.findByTargetTypeAndTargetIdInOrderBySeqAsc(
+	        TargetType.RECIPE, recipeIds
+	    );
+
+	    // recipeId → List<Media> 매핑
+	    Map<Long, List<Media>> mediaMap = allMedia.stream()
+	        .collect(Collectors.groupingBy(Media::getTargetId));
+
+	    // DTO 변환
+	    return recipes.map(recipe -> {
+	        List<Media> mediaList = mediaMap.getOrDefault(recipe.getRecipeId(), List.of());
+	        return RecipeResponseDto.from(recipe, mediaList);
+	    });
 	}
 
 	/**
-	 * 레시피 상세 조회
-	 * 
+	 * 레시피 상세 조회 (등록된 이미지 포함)
 	 * @param recipeId
 	 * @param userId
 	 * @return
