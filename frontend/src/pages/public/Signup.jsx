@@ -52,7 +52,7 @@ export default function Signup() {
       const res = await login({ user_id: form.user_id, password: form.password });
       const token = res.data.token;  // 서버에서 받은 토큰
       await doLogin({ accessToken: token });
-      navigate('/user/home');
+      navigate('/login');
     } catch (err) {
       if (err.response && err.response.data) {
         setSignupError(err.response.data.message || '회원가입에 실패하였습니다.');
