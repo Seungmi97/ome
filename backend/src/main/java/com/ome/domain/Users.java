@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.ome.common.enums.CreatorStatus;
 import com.ome.common.enums.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -60,6 +61,10 @@ public class Users {
 
     @Column(nullable = false)
     private boolean approved = false;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false) 
+    private CreatorStatus creatorStatus;
 
     // 연관관계: 1:1 Membership
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

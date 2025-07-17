@@ -3,6 +3,8 @@ package com.ome.service.auth;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ome.common.enums.CreatorStatus;
+import com.ome.common.enums.Role;
 import com.ome.domain.Users;
 import com.ome.dto.auth.request.UserUpdateRequestDto;
 import com.ome.dto.auth.response.UserInfoResponseDto;
@@ -10,7 +12,9 @@ import com.ome.dto.mypage.response.AdminMyPageResponseDto;
 import com.ome.dto.mypage.response.CreatorMyPageResponseDto;
 import com.ome.dto.mypage.response.UserMyPageResponseDto;
 import com.ome.repository.auth.UserRepository;
+import com.ome.repository.recipe.RecipeRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 // 🌟🌟 마이페이지 , 사용자 정보 조회 / 수정, 탈퇴 등 동작 구현
@@ -18,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 	private final UserRepository userRepository;
+	private final RecipeRepository recipeRepository;
 	private final PasswordEncoder passwordEncoder;
 	
 	// 🔴 회원 탈퇴 
@@ -32,12 +37,22 @@ public class UserService {
 		Users user = userRepository.findByUserId(userId)
 				.orElseThrow(()-> new RuntimeException("사용자 정볼르 찾을 수 없습니다."));
 		
+		int recipeCount = recipeRepository.countByWriter_UserId(userId); 
 		////List<CreatorSumaryDto> likedCreator = likeService.getLikedCreators(user); // 작가 찜 목록 (추후 팀원 코드 참고하여 수정)
 		switch (user.getRole()) {
+		// 🌟 관리자일 경우 -> 총 사용자 수 , 작가 신청 수 , 작가 수 
         case ADMIN:
-            return new AdminMyPageResponseDto(user);  // Admin 전용 DTO
+        	int totalUsers = userRepository.countAllUsers();
+        	int pending = userRepository.countByCreatorStatus(CreatorStatus.PENDING);
+			int approved = userRepository.countByRole(Role.CREATOR);
+            return new AdminMyPageResponseDto(user, totalUsers, pending , approved);  // Admin 전용 DTO
+        // 🌟 작가일 경우 -> 찜 수 , 구독자 목록 수 , 내가 올린 레시피 수
         case CREATOR:
-            return new CreatorMyPageResponseDto(user); //  (user, likedCreators)
+        	// 찜 수 나중에 연결 필요
+        	int likeCount = 0;
+        	// 구독 시스템 나중에 연결 필요
+        	int subscriberCount = 0;
+            return new CreatorMyPageResponseDto(user, subscriberCount,recipeCount , likeCount); //  (user, likedCreators)
         case USER:
         default:
             return new UserMyPageResponseDto(user); //  (user, likedCreators)

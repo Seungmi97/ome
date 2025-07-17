@@ -39,5 +39,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             @Param("isPremium") PremiumType isPremium,
             Pageable pageable
         );
+    
+    // 작가 레시피 수 세기 ( 작가 마이페이지 ) 
+    int countByWriter_UserId(String userId);
 	
 }
