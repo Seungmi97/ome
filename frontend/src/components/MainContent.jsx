@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import RecipeCard from './RecipeCard';
 import SkeletonCard from './SkeletonCard';
 import { getRecipeList } from '@/services/recipeAPI';
@@ -7,6 +9,8 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
   const [inputValue, setInputValue] = useState('');
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth(); // ✅ 현재 로그인 유저 정보
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -40,8 +44,9 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
 
   return (
     <div className="flex-1 px-4">
-      {/* 검색바 */}
-      <div className="mb-4">
+      {/* 상단: 검색바 + 버튼 */}
+      <div className="mb-4 flex justify-between items-center flex-wrap gap-2">
+        {/* 검색바 */}
         <input
           type="text"
           value={inputValue}
@@ -49,15 +54,27 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
           onKeyDown={handleKeyDown}
           placeholder="검색어 입력 후 Enter"
           className="border px-4 py-2 rounded-md w-full max-w-md
-            placeholder-gray-500 dark:placeholder-gray-400
-            bg-white text-black dark:bg-gray-800 dark:text-white
-            border-gray-300 dark:border-gray-600"
+      placeholder-gray-500 dark:placeholder-gray-400
+      bg-white text-black dark:bg-gray-800 dark:text-white
+      border-gray-300 dark:border-gray-600"
         />
+
+        {/* 크리에이터 전용 버튼 */}
+        {user?.role === 'CREATOR' && (
+          <button
+            onClick={() => navigate('/creator/create-recipe')}
+            className="flex items-center gap-1 whitespace-nowrap
+        bg-purple-100 hover:bg-purple-200 text-purple-800
+        font-medium px-4 py-2 rounded transition"
+          >
+            ＋ 레시피 생성하기
+          </button>
+        )}
       </div>
 
-      {/* 카드 목록 or 스켈레톤 */}
+      {/* 카드 목록 */}
       <div className="flex flex-wrap gap-6">
-        {/* 🔧 테스트용 더미 카드 */}
+        {/* 더미 카드 (테스트용) */}
         <RecipeCard
           id="dummy-id"
           title="더미 레시피"
@@ -84,7 +101,7 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
         )}
       </div>
 
-      {/* 더보기 */}
+      {/* 더보기 버튼 */}
       {!loading && recipes.length >= visibleCount && (
         <div className="mt-6 text-center">
           <button
