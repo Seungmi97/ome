@@ -2,6 +2,7 @@ package com.ome.domain;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import com.ome.common.enums.QuestionStatus;
@@ -41,8 +42,6 @@ public class Question {
 	@Enumerated(EnumType.STRING)
 	private QuestionStatus status;
 	
-	@CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "created_at", updatable = false)
+	@CreationTimestamp
 	private LocalDateTime createdAt;
 }
