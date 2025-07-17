@@ -1,6 +1,7 @@
 package com.ome.controller.auth;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import com.ome.dto.auth.request.SignupRequestDto;
 import com.ome.dto.auth.response.LoginResponseDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.service.auth.AuthService;
+import com.ome.service.auth.CustomUserDetails;
 import com.ome.util.JwtUtil;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,7 +50,7 @@ public class AuthController {
 	
 	// 🔴 로그아웃 
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(HttpServletResponse response){
+	public ResponseEntity<?> logout(@AuthenticationPrincipal CustomUserDetails user, HttpServletResponse response){
 		// 클라이언트에서 토큰 제거 필요함 -> 서버는 무상태임 
 		response.setHeader("Authorization", null);
 		return ResponseEntity.ok("로그아웃 완료");

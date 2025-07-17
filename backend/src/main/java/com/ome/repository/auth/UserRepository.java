@@ -5,11 +5,11 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.jpa.repository.EntityGraph;
 
 import com.ome.common.enums.CreatorStatus;
 import com.ome.common.enums.Role;
@@ -55,12 +55,19 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 	@Query("SELECT COUNT(u) FROM Users u")
 	int countAllUsers();  // 전체 유저 수
 	
+	
+	// 멤버쉽 사용자 수 조회 - 관리자 부분
+	@Query("SELECT COUNT(u) FROM Users u WHERE u.membership IS NOT NULL")
+	int countMembershipUsers();
+	
 	// 작가 권한을 가진 사람 수 세기 - 관리자 부분
 	int countByRole(Role role);
-	
+		
 	// 유저 정보 + 북마크 리스트까지 미리 DB에서 꺼냄 
-   @EntityGraph(attributePaths = "bookmarks")
-   Optional<Users> findWithBookmarksById(Long id);
+	@EntityGraph(attributePaths = "bookmarks")
+	Optional<Users> findWithBookmarksById(Long id);
+
+
 
 }
 
