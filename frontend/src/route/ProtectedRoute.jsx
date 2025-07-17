@@ -9,10 +9,6 @@ export default function ProtectedRoute({ role }) {
   }
 
   if (!user || user.role !== role) {
-    console.log(user);
-console.log('user.role:', user?.role);
-console.log('expected role:', role);
-    
     return <Navigate to="/unauthorized" replace />;
   }
 
