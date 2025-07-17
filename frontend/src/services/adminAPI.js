@@ -1,27 +1,34 @@
 import api from './api';
+import axios from 'axios';
 
-//변동 있을 수 있음
-// ✅ 작가 신청 목록 조회
-export const getCreatorApplications = () => {
-  return api.get('/admin/creators');
+// 1) ApproveManage 작가 신청 목록 조회
+export const getCreatorApplications = ({ keyword, page, size }) => {
+  return api.get('/admin/creators', {
+    params: { keyword, page, size },
+  });
 };
 
-// ✅ 작가 승인
-export const approveCreator = (id) => {
-  return api.post(`/admin/creators/${id}/approve`);
+export const approveCreator = (userId) => {
+  return api.post(`/admin/creators/${userId}/approve`);
 };
 
-// ✅ 작가 거절
-export const rejectCreator = (id) => {
-  return api.post(`/admin/creators/${id}/reject`);
+export const rejectCreator = (userId) => {
+  return api.post(`/admin/creators/${userId}/reject`);
 };
 
-// ✅ 전체 회원 목록 조회
-export const getAllUsers = () => {
-  return api.get('/admin/users');
+//  전체 유저 목록 조회
+export const getAllUsers = ({ keyword = '', page = 0, size = 10 } = {}) => {
+  const token = localStorage.getItem('accessToken');
+  return axios.get('/api/admin/users', {
+    params: { keyword, page, size },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
-// ✅ 회원 강제 탈퇴 (비활성화 처리)
-export const deactivateUser = (userId) => {
-  return api.patch(`/admin/users/${userId}/deactivate`);
+
+//회원 강제 탈퇴 (비활성화 처리)
+  export const deleteUser = (userId) => {
+    return api.delete(`/admin/users/${userId}/delete`);
 };

@@ -1,29 +1,53 @@
-import React, { useState } from 'react';
-
-const dummyApprovals = [
-  { id: 1, name: '김작가', email: 'author1@example.com', status: 'PENDING' },
-  { id: 2, name: '이작가', email: 'author2@example.com', status: 'PENDING' },
-  { id: 3, name: '박작가', email: 'author3@example.com', status: 'APPROVED' },
-];
+import React, { useEffect, useState } from 'react';
+import {
+  getCreatorApplications,
+  approveCreator,
+  rejectCreator,
+} from '@/services/adminAPI';
 
 export default function ApproveManage() {
-  const [approvals, setApprovals] = useState(dummyApprovals);
+  const [approvals, setApprovals] = useState([]);
+  const [page, setPage] = useState(0);
+  const [size] = useState(10);
 
-  const handleApprove = (id) => {
-    setApprovals((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, status: 'APPROVED' } : item
-      )
-    );
+  const fetchApprovals = async () => {
+    try {
+      const res = await getCreatorApplications({ keyword: '', page, size });
+      setApprovals(res.data.content); // ✅ 페이징 객체에서 content 꺼냄
+    } catch (err) {
+      console.error('작가 신청 목록 조회 실패:', err);
+    }
   };
 
-  const handleReject = (id) => {
-    setApprovals((prev) => prev.filter((item) => item.id !== id));
+  const handleApprove = async (userId) => {
+    try {
+      await approveCreator(userId);
+      setApprovals((prev) =>
+        prev.map((item) =>
+          item.userId === userId ? { ...item, approved: true } : item
+        )
+      );
+    } catch (err) {
+      console.error('작가 승인 실패:', err);
+    }
   };
+
+  const handleReject = async (userId) => {
+    try {
+      await rejectCreator(userId);
+      setApprovals((prev) => prev.filter((item) => item.userId !== userId));
+    } catch (err) {
+      console.error('작가 거절 실패:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchApprovals();
+  }, [page]);
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">승인 관리</h2>
+      <h2 className="text-2xl font-bold mb-6">작가 승인 관리</h2>
 
       <div className="bg-white shadow rounded">
         <table className="w-full table-auto border">
@@ -31,28 +55,26 @@ export default function ApproveManage() {
             <tr>
               <th className="p-3">이름</th>
               <th>이메일</th>
-              <th>상태</th>
               <th>작업</th>
             </tr>
           </thead>
           <tbody>
             {approvals.map((item) => (
-              <tr key={item.id} className="border-t">
-                <td className="p-3">{item.name}</td>
+              <tr key={item.userId} className="border-t">
+                <td className="p-3">{item.username}</td>
                 <td>{item.email}</td>
-                <td>{item.status}</td>
                 <td>
-                  {item.status === 'PENDING' ? (
+                  {!item.approved ? (
                     <>
                       <button
                         className="bg-green-500 text-white px-3 py-1 rounded mr-2"
-                        onClick={() => handleApprove(item.id)}
+                        onClick={() => handleApprove(item.userId)}
                       >
                         승인
                       </button>
                       <button
                         className="bg-red-500 text-white px-3 py-1 rounded"
-                        onClick={() => handleReject(item.id)}
+                        onClick={() => handleReject(item.userId)}
                       >
                         거절
                       </button>

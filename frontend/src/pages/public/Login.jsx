@@ -14,34 +14,36 @@ export default function Login() {
   const { login } = useAuth(); // AuthContext 사용할 경우에만
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrorMessage('');
-    try {
-      const res = await loginAPI({ user_id: id, password });
-      const token = res.data.token;
+  e.preventDefault();
+  setIsLoading(true);
+  setErrorMessage('');
+  try {
+    const res = await loginAPI({ user_id: id, password });
+    const token = res.data.token;
+    // AuthContext 사용 시:
+    const role = await login({ accessToken: token });
 
-      // AuthContext 사용 시:
-      const role = await login({ accessToken: token });
 
-      // 직접 저장하는 경우 (Context 없이):
-      // localStorage.setItem('accessToken', accessToken);
+    console.log("✅ 저장할 accessToken:", token); // 확인용 로그
+    localStorage.setItem("accessToken", token);
+    // 유저 정보는 Context 내부 fetchUserProfile에서 받아옴
+    const user = JSON.parse(localStorage.getItem('user')); //사용자 정보 로컬스토리지에 저장 -> user객체 파싱 후 role 확인
+    const role = user?.role;
 
-      // 유저 role에 따라 리다이렉트
-      if (role === 'USER') navigate('/user/main');
-      else if (role === 'CREATOR') navigate('/creator/main');
-      else navigate('/user/main');
+    if (role === 'ADMIN') navigate('/admin/dashboard'); // 관리자의 경우 대시보드로 이동 
+    else if (role === 'CREATOR') navigate('/creator/main');
+    else if (role === 'USER') navigate('/user/main');
+    else navigate('/unauthorized');
+  } catch (err) {
+    setErrorMessage('아이디 또는 비밀번호를 다시 입력해주세요.');
+    console.error(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-    } catch (err) {
-      setErrorMessage('아이디 또는 비밀번호를 다시 입력해주세요.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-
-  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
