@@ -18,18 +18,18 @@ public class CreatorMyPageResponseDto {
 	private String username;
 	private String email;
 	private int subscriberCount;
-	private int recipeCount;
-	private int likeCount;
+	private int recipeCount;	
+	private int totalLikes;
 	private Role role;
 	private LocalDateTime createdAt;
 	
-	public CreatorMyPageResponseDto (Users user, int subscriberCount , int recipeCount, int likeCount) {
+	public CreatorMyPageResponseDto (Users user, int subscriberCount , int recipeCount,  int totalLikes) {
 		this.userId = user.getUserId();
 		this.username = user.getUsername();
 		this.email = user.getEmail();
 		this.subscriberCount = subscriberCount;
 		this.recipeCount = recipeCount;
-		this.likeCount = likeCount;
+		this.totalLikes=totalLikes;
 		this.role=user.getRole();
 		this.createdAt = user.getCreatedAt();
 	}

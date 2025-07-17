@@ -14,16 +14,18 @@ public class UserMyPageResponseDto {
 	private String username;
 	private String email;
 	private Role role;
+	private int bookmarkCount;
 	private LocalDateTime createdAt;
-	// private List<CreatorSummaryDto> likedCreators; // 찜한 작가들 (🌟🌟다른 팀원이 짠 부분에서 가져오기 )
 	
-	public UserMyPageResponseDto (Users user) {
+	
+	public UserMyPageResponseDto (Users user, int bookmarkCount) {
 		this.userId = user.getUserId();
 		this.username = user.getUsername();
 		this.email = user.getEmail();
 		this.role=user.getRole();
+		this.bookmarkCount = bookmarkCount;
 		this.createdAt = user.getCreatedAt();
-		// this.likedCreator = likedCretors;
+		
 	}
 
 }

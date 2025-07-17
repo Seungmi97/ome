@@ -30,4 +30,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     	    WHERE b.user.id = :userId
     	""")
     List<Bookmark> findAllByUserIdWithRecipeAndWriter(@Param("userId") Long userId);
+    
+   // 총 북마크 개수 - 작가 마이페이지
+   int countByRecipe_Writer_UserId(String userId);
 }
