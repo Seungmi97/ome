@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.ome.common.enums.CreatorStatus;
 import com.ome.common.enums.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,8 +19,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,6 +59,10 @@ public class Users {
 
     @Column(nullable = false)
     private boolean approved = false;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false) 
+    private CreatorStatus creatorStatus;
 
     // 연관관계: 1:1 Membership
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -68,6 +71,11 @@ public class Users {
     // 연관관계: 1:N Recipes
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recipe> recipes = new ArrayList<>();
+    
+    // 연관관계: 1:N Bookmarks
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Bookmark> bookmarks = new ArrayList<>();
+ 
 
     // 헬퍼 메서드 (멤버쉽 자동 추가)
     public void setMembership(Membership membership) {
@@ -83,10 +91,20 @@ public class Users {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     
-    //헬퍼 메소드 
+    
     public void addRecipe(Recipe recipe) {
         this.recipes.add(recipe);
         recipe.setWriter(this);
+    }
+    
+    public void addBookmark(Bookmark bookmark) {
+        bookmarks.add(bookmark);
+        bookmark.setUser(this);
+    }
+    
+    public void removeBookmark(Bookmark bookmark) {
+        bookmarks.remove(bookmark);
+        bookmark.setUser(null);
     }
 
 }

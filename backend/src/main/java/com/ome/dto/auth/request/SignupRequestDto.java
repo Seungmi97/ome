@@ -3,13 +3,16 @@ package com.ome.dto.auth.request;
 
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ome.common.enums.Role;
 
 import lombok.Getter;
 
 @Getter
 public class SignupRequestDto {
+	@JsonProperty("user_id")
 	private String userId;
+	
 	private String username;
 	private String password;
 	private String email;

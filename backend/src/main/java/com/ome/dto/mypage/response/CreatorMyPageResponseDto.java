@@ -14,15 +14,17 @@ public class CreatorMyPageResponseDto {
 	private String userId;
 	private String username;
 	private String email;
-	private int subscriverCount;
+	private int subscriberCount;
 	private int recipeCount;
+	private int likeCount;
 	
-	public CreatorMyPageResponseDto (Users user) {
+	public CreatorMyPageResponseDto (Users user, int subscriberCount , int recipeCount, int likeCount) {
 		this.userId = user.getUserId();
 		this.username = user.getUsername();
 		this.email = user.getEmail();
-		this.subscriverCount = 0;
-		this.recipeCount = 0;
+		this.subscriberCount = subscriberCount;
+		this.recipeCount = recipeCount;
+		this.likeCount = likeCount;
 	}
 
 }
