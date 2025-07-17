@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login as loginAPI } from '@/services/authAPI';
 import { Link } from 'react-router-dom';
-import logo from '@/assets/ome-logo.svg'; 
-import { useAuth } from '@/hooks/useAuth'; 
+import logo from '@/assets/ome-logo.svg'; // 실제 사용할 경우에만 유지
+import { useAuth } from '@/hooks/useAuth'; // 실제 사용할 경우만 유지
 import ProgressButton from '@/components/ProgressButton';
 
 
@@ -22,8 +22,9 @@ export default function Login() {
   try {
     const res = await loginAPI({ user_id: id, password });
     const token = res.data.token;
+    // AuthContext 사용 시:
+    const role = await login({ accessToken: token });
 
-    await login({ accessToken: token });
 
     console.log("✅ 저장할 accessToken:", token); // 확인용 로그
     localStorage.setItem("accessToken", token);
@@ -35,7 +36,6 @@ export default function Login() {
     else if (role === 'CREATOR') navigate('/creator/main');
     else if (role === 'USER') navigate('/user/main');
     else navigate('/unauthorized');
-
   } catch (err) {
     setErrorMessage('아이디 또는 비밀번호를 다시 입력해주세요.');
     console.error(err);

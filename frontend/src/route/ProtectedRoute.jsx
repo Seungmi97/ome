@@ -8,11 +8,7 @@ export default function ProtectedRoute({ role }) {
     return <Navigate to="/login" replace />;
   }
 
-    if (!user || user.role.toUpperCase() !== role) {
-    console.log(user);
-    console.log('user.role:', user?.role);
-    console.log('expected role:', role);
-    
+  if (!user || user.role?.toUpperCase() !== role.toUpperCase()) {
     return <Navigate to="/unauthorized" replace />;
   }
 
