@@ -2,6 +2,9 @@ package com.ome.dto.mypage.response;
 
 
 
+import java.time.LocalDateTime;
+
+import com.ome.common.enums.Role;
 import com.ome.domain.Users;
 
 import lombok.Getter;
@@ -17,6 +20,8 @@ public class CreatorMyPageResponseDto {
 	private int subscriberCount;
 	private int recipeCount;
 	private int likeCount;
+	private Role role;
+	private LocalDateTime createdAt;
 	
 	public CreatorMyPageResponseDto (Users user, int subscriberCount , int recipeCount, int likeCount) {
 		this.userId = user.getUserId();
@@ -25,6 +30,8 @@ public class CreatorMyPageResponseDto {
 		this.subscriberCount = subscriberCount;
 		this.recipeCount = recipeCount;
 		this.likeCount = likeCount;
+		this.role=user.getRole();
+		this.createdAt = user.getCreatedAt();
 	}
 
 }

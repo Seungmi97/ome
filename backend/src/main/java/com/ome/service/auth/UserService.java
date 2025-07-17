@@ -45,7 +45,8 @@ public class UserService {
         	int totalUsers = userRepository.countAllUsers();
         	int pending = userRepository.countByCreatorStatus(CreatorStatus.PENDING);
 			int approved = userRepository.countByRole(Role.CREATOR);
-            return new AdminMyPageResponseDto(user, totalUsers, pending , approved);  // Admin 전용 DTO
+			int membershipCount = userRepository.countMembershipUsers();
+            return new AdminMyPageResponseDto(user, totalUsers, pending , approved,membershipCount);  // Admin 전용 DTO
         // 🌟 작가일 경우 -> 찜 수 , 구독자 목록 수 , 내가 올린 레시피 수
         case CREATOR:
         	// 찜 수 나중에 연결 필요
@@ -83,7 +84,8 @@ public class UserService {
 		
 		// 비밀번호 비어있지 않고 null 값이 아닐 경우 입력 받은 이메일로 수정 
 		if(dto.getPassword() != null && !dto.getPassword().isBlank()) {
-			user.setPassword(dto.getPassword());
+			String encodedPassword = passwordEncoder.encode(dto.getPassword());
+			user.setPassword(encodedPassword);
 		}
 		
 		userRepository.save(user);

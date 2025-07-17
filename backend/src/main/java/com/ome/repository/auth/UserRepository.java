@@ -57,6 +57,10 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 	// 작가 권한을 가진 사람 수 세기 - 관리자 부분
 	int countByRole(Role role);
 	
+	// 멤버쉽 사용자 수 조회 - 관리자 부분
+	@Query("SELECT COUNT(u) FROM Users u WHERE u.membership IS NOT NULL")
+	int countMembershipUsers();
+	
 	
 
 
