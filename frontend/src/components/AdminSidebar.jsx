@@ -6,9 +6,8 @@ const menuItems = [
   { name: '승인 관리', path: '/admin/approve-manage', icon: '📝' },
   { name: '유저 관리', path: '/admin/user-manage', icon: '👥' },
   { name: '신고 관리', path: '/admin/report', icon: '🚨' },
-  { name: '댓글 관리', path: '/admin/comment-manage', icon: '💬' },
   { name: '레시피 목록', path: '/admin/recipes', icon: '🧾' },
-  { name: 'Q&A 응답', path: '/admin/qna', icon: '📮' },
+  // { name: 'Q&A 응답', path: '/admin/qna', icon: '📮' },
 ];
 
 export default function AdminSidebar() {
