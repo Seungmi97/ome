@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import PublicRoutes from "@/route/PublicRoute";
 import ProtectedRoute from "@/route/ProtectedRoute";
 
+import RecipeUploadForm from "@/pages/creator/RecipeUploadForm";
+
 import AdminDashboardLayout from "@/layouts/AdminDashboardLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import ApproveManage from "@/pages/admin/ApproveManage";
@@ -29,6 +31,7 @@ export default function App() {
       {/* 크리에이터 보호 라우트 */}
       <Route element={<ProtectedRoute role="CREATOR" />}>
         <Route path="/creator/main" element={<CreatorMainpage />} />
+        <Route path="/creator/recipes/upload" element={<RecipeUploadForm />} />
       </Route>
 
       {/* 관리자 보호 라우트 + 레이아웃 */}

@@ -11,9 +11,14 @@ export const getRecipeDetail = (id) => {
 };
 
 // ✅ 레시피 등록
-export const createRecipe = (data) => {
-  return api.post('/recipes', data);
+export const createRecipe = (formData) => {
+  return api.post('/recipes', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };
+
 
 // ✅ 레시피 수정
 export const updateRecipe = (id, data) => {

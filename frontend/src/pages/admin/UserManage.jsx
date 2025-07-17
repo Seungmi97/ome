@@ -1,20 +1,58 @@
-// src/pages/admin/UserManage.jsx
-import React, { useState } from 'react';
-
-const dummyUsers = [
-  { id: 1, name: '박규환', email: 'kyu@example.com', role: 'USER', status: 'ACTIVE', joinedAt: '2024-12-01' },
-  { id: 2, name: '박경훈', email: 'kyung@example.com', role: 'CREATOR', status: 'LEAVED', joinedAt: '2024-11-20' },
-  { id: 3, name: '이서준', email: 'seo@example.com', role: 'USER', status: 'ACTIVE', joinedAt: '2025-01-15' },
-];
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function UserManage() {
   const [search, setSearch] = useState('');
+  const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(0); // 백엔드는 0부터 시작
+  const [size] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const filteredUsers = dummyUsers.filter(
-    (user) =>
-      user.name.includes(search) ||
-      user.email.includes(search)
-  );
+  // 🔁 유저 목록 불러오기
+  useEffect(() => {
+    fetchUsers();
+  }, [search, page]);
+
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get('/api/admin/users', {
+        params: {
+          keyword: search,
+          page,
+          size,
+        },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+
+      console.log('res.data:', res.data); // ✅ 확인용 로그
+
+      // ✅ 응답 구조 방어 처리
+      setUsers(Array.isArray(res.data.content) ? res.data.content : []);
+      setTotalPages(res.data.totalPages || 0);
+    } catch (err) {
+      console.error('유저 불러오기 실패', err);
+      setUsers([]);
+      setTotalPages(0);
+    }
+  };
+
+  const handleDelete = async (userId) => {
+    if (!window.confirm('정말로 강제 탈퇴시키겠습니까?')) return;
+    try {
+      await axios.delete(`/api/admin/users/${userId}/delete`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      alert('회원 강제 탈퇴 완료');
+      fetchUsers(); // 다시 로딩
+    } catch (err) {
+      alert('강제 탈퇴 실패');
+      console.error(err);
+    }
+  };
 
   return (
     <div>
@@ -26,15 +64,12 @@ export default function UserManage() {
           type="text"
           placeholder="이름 또는 이메일 검색"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(0); // 검색하면 첫 페이지로
+          }}
           className="border rounded px-4 py-2 w-1/3"
         />
-        <button
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-          onClick={() => alert('신고하기')}
-        >
-          신고하기
-        </button>
       </div>
 
       {/* 테이블 */}
@@ -52,8 +87,8 @@ export default function UserManage() {
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map((user) => (
+            {Array.isArray(users) && users.length > 0 ? (
+              users.map((user) => (
                 <tr key={user.id} className="border-t">
                   <td className="p-3">{user.id}</td>
                   <td>{user.name}</td>
@@ -72,6 +107,12 @@ export default function UserManage() {
                   </td>
                   <td>{user.joinedAt}</td>
                   <td>
+                    <button
+                      className="text-red-600 hover:underline mr-2"
+                      onClick={() => handleDelete(user.userId)}
+                    >
+                      탈퇴
+                    </button>
                     <button className="text-blue-600 hover:underline">상세</button>
                   </td>
                 </tr>
@@ -85,6 +126,27 @@ export default function UserManage() {
             )}
           </tbody>
         </table>
+
+        {/* 페이지네이션 */}
+        <div className="flex justify-center mt-4 space-x-2">
+          <button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+            disabled={page === 0}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            이전
+          </button>
+          <span className="px-3 py-1">
+            {totalPages > 0 ? `${page + 1} / ${totalPages}` : '0 / 0'}
+          </span>
+          <button
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
+            disabled={page >= totalPages - 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            다음
+          </button>
+        </div>
       </div>
     </div>
   );
