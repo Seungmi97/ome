@@ -81,6 +81,7 @@ public class Recipe {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+    
 
     @PreUpdate
     public void onUpdate() {
