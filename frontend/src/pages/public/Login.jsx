@@ -24,13 +24,12 @@ export default function Login() {
       const token = res.data.token;
 
       // AuthContext 사용 시:
-      await login({ accessToken: token });
+      const role = await login({ accessToken: token });
 
       // 직접 저장하는 경우 (Context 없이):
       // localStorage.setItem('accessToken', accessToken);
 
       // 유저 role에 따라 리다이렉트
-      const role = res.data?.role || res.data.user?.role;
       if (role === 'USER') navigate('/user/main');
       else if (role === 'CREATOR') navigate('/creator/main');
       else navigate('/user/main');
