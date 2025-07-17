@@ -32,3 +32,17 @@ export const getAllUsers = ({ keyword = '', page = 0, size = 10 } = {}) => {
   export const deleteUser = (userId) => {
     return api.delete(`/admin/users/${userId}/delete`);
 };
+
+
+// 신고 전체 목록 조회
+export const getAllReports = ({ targetType = '', keyword = '', page = 0, size = 10 } = {}) => {
+  return api.get('/admin/reports', {
+    params: { targetType, keyword, page, size },
+  });
+};
+
+// 신고 상세 조회
+export const getReportDetail = (reportId) => {
+  return api.get(`/admin/reports/${reportId}`);
+};
+
