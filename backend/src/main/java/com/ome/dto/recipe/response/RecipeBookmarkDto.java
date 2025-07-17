@@ -8,29 +8,23 @@ import com.ome.domain.Recipe;
 import lombok.Data;
 
 @Data
-public class RecipeResponseDto {
+public class RecipeBookmarkDto {
 	
-    private Long recipeId;
-    private Long writerId;  
+	private Long recipeId;
+	private Long writerId; 
     private String writerNickname;
     private String title;
-    private String description;
     private String isPremium;
-    private String category;
     private String thumbnailUrl;
 
-
-    public static RecipeResponseDto from(Recipe recipe, List<Media> mediaList) {
-        RecipeResponseDto dto = new RecipeResponseDto();
+    public static RecipeBookmarkDto fromEntity(Recipe recipe, List<Media> mediaList) {
+    	RecipeBookmarkDto dto = new RecipeBookmarkDto();
         dto.setRecipeId(recipe.getRecipeId());
         dto.setWriterId(recipe.getWriter().getId());
         dto.setWriterNickname(recipe.getWriter().getUsername());
         dto.setTitle(recipe.getTitle());
-        dto.setDescription(recipe.getDescription());
-        dto.setIsPremium(recipe.getIsPremium().name()); //enum필드
-        dto.setCategory(recipe.getCategory().name()); //enum필
+        dto.setIsPremium(recipe.getIsPremium().name());
         dto.setThumbnailUrl(mediaList.isEmpty() ? null : mediaList.get(0).getUrl());
-        
         return dto;
     }
 }
