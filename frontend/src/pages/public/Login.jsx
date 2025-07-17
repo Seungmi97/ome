@@ -2,48 +2,44 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login as loginAPI } from '@/services/authAPI';
 import { Link } from 'react-router-dom';
-import logo from '@/assets/ome-logo.svg'; // 실제 사용할 경우에만 유지
-import { useAuth } from '@/hooks/useAuth'; // 실제 사용할 경우만 유지
+import logo from '@/assets/ome-logo.svg';
+import { useAuth } from '@/hooks/useAuth';
 import ProgressButton from '@/components/ProgressButton';
-
 
 export default function Login() {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
-  const { login } = useAuth(); // AuthContext 사용할 경우에만
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setErrorMessage('');
-  try {
-    const res = await loginAPI({ user_id: id, password });
-    const token = res.data.token;
-    // AuthContext 사용 시:
-    const role = await login({ accessToken: token });
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage('');
 
+    try {
+      const res = await loginAPI({ user_id: id, password });
+      const token = res.data.token;
 
-    console.log("✅ 저장할 accessToken:", token); // 확인용 로그
-    localStorage.setItem("accessToken", token);
-    // 유저 정보는 Context 내부 fetchUserProfile에서 받아옴
-    const user = JSON.parse(localStorage.getItem('user')); //사용자 정보 로컬스토리지에 저장 -> user객체 파싱 후 role 확인
-    const role = user?.role;
+      // AuthContext에 토큰 저장 + 사용자 정보 fetch
+      const role = await login({ accessToken: token });
 
-    if (role === 'ADMIN') navigate('/admin/dashboard'); // 관리자의 경우 대시보드로 이동 
-    else if (role === 'CREATOR') navigate('/creator/main');
-    else if (role === 'USER') navigate('/user/main');
-    else navigate('/unauthorized');
-  } catch (err) {
-    setErrorMessage('아이디 또는 비밀번호를 다시 입력해주세요.');
-    console.error(err);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      // 역할별로 라우팅
+      if (role === 'USER') navigate('/user/main');
+      else if (role === 'CREATOR') navigate('/creator/main');
+      else if (role === 'ADMIN') navigate('/admin');
+      else navigate('/unauthorized');
 
+    } catch (err) {
+      console.error(err);
+      setErrorMessage('아이디 또는 비밀번호를 다시 입력해주세요.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -51,13 +47,10 @@ export default function Login() {
         {/* 로고 */}
         <div className="flex items-center justify-center mb-1">
           <Link to="/">
-            <img
-              src={logo}
-              alt="OME 로고"
-              className="h-20 w-auto mr-2 cursor-pointer"
-            />
+            <img src={logo} alt="OME 로고" className="h-20 w-auto mr-2 cursor-pointer" />
           </Link>
         </div>
+
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">ID</label>
@@ -82,14 +75,8 @@ export default function Login() {
           </div>
 
           <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="remember"
-              className="w-4 h-4 mr-2 text-green-600"
-            />
-            <label htmlFor="remember" className="text-sm text-gray-700">
-              아이디 저장
-            </label>
+            <input type="checkbox" id="remember" className="w-4 h-4 mr-2 text-green-600" />
+            <label htmlFor="remember" className="text-sm text-gray-700">아이디 저장</label>
           </div>
 
           <ProgressButton isLoading={isLoading} type="submit">
@@ -104,10 +91,9 @@ export default function Login() {
               회원가입
             </button>
           </Link>
+
           {errorMessage && (
-            <p className="text-red-500 text-sm text-center mt-2">
-              {errorMessage}
-            </p>
+            <p className="text-red-500 text-sm text-center mt-2">{errorMessage}</p>
           )}
         </form>
       </div>

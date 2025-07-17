@@ -62,7 +62,7 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
         {/* 크리에이터 전용 버튼 */}
         {user?.role === 'CREATOR' && (
           <button
-            onClick={() => navigate('/creator/create-recipe')}
+            onClick={() => navigate('/creator/recipes/upload')}
             className="flex items-center gap-1 whitespace-nowrap
         bg-purple-100 hover:bg-purple-200 text-purple-800
         font-medium px-4 py-2 rounded transition"
