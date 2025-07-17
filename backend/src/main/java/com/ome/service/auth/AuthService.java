@@ -5,10 +5,13 @@ import org.springframework.security.web.server.header.CacheControlServerHttpHead
 import org.springframework.stereotype.Service;
 
 import com.ome.domain.Users;
+import com.ome.common.enums.CreatorStatus;
+import com.ome.common.enums.MemberState;
 import com.ome.common.enums.Role;
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
 import com.ome.repository.auth.UserRepository;
+import com.ome.service.membership.MembershipService;
 import com.ome.util.JwtUtil;
 
 // 회원가입 , 로그인 , 로그아웃 , 인증 관련 동작 구현 
@@ -21,6 +24,7 @@ public class AuthService {
 	
 	private final UserRepository repository;
 	private final PasswordEncoder passwordEncoder;
+	private final MembershipService membershipService;
 	private final JwtUtil jwtUtil;
 	
 	// 🔴 회원 가입 
@@ -50,7 +54,7 @@ public class AuthService {
 			
 		Role role = Role.USER;
 		boolean approved = dto.isApplyAsCreator() ? false : true; // 작가 신청하면 -> 작가 승인이 false로 됨.
-
+		CreatorStatus creatorStatus = dto.isApplyAsCreator() ? CreatorStatus.PENDING : CreatorStatus.APPROVED;
 		
 		Users user = Users.builder()
 				.userId(dto.getUserId())
@@ -59,9 +63,17 @@ public class AuthService {
 				.password(passwordEncoder.encode(dto.getPassword())) // 비밀번호 암호화
 				.role(role) // ROLE_USER와 ROLE_CREATOR만 허용
 				.approved(approved) // 작가 승인 default 값으로 false 지정
+				.creatorStatus(creatorStatus) 
 				.build();
 		
-		repository.save(user);	
+		Users savedUser = repository.save(user); 
+		
+		// 멤버십 초기화 호출
+		if (dto.isApplyAsCreator()) {
+			membershipService.createInitialMembership(savedUser.getId(), MemberState.premium);
+		} else {
+			membershipService.createInitialMembership(savedUser.getId(), MemberState.free);
+		}
 		
 	}
 	
@@ -73,7 +85,7 @@ public class AuthService {
 		// 사용자 id 일치 여부 확인
 		Users user = repository.findByUserId(dto.getUserId())
 				.orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
-		 System.out.println("DB 비번: " + user.getPassword());
+		 
 		// 패스워드 일치하는지 여부 확인 
 		if(!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");

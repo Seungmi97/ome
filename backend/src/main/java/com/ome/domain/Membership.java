@@ -15,14 +15,18 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "membership")
-@Data
+@Getter
+@Setter // Setter는 꼭 필요한 경우에만 선언하는 것이 좋습니다.
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Membership {
 
     @Id 
