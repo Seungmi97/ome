@@ -1,6 +1,8 @@
 package com.ome.repository.recipe;
 
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import com.ome.common.enums.Category;
 import com.ome.common.enums.PremiumType;
 import com.ome.domain.Recipe;
+import com.ome.domain.Users;
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
@@ -40,4 +43,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             Pageable pageable
         );
 	
+	@EntityGraph(attributePaths = "bookmarks") //bookmarks까지 fetch
+	Optional<Recipe> findWithBookmarksByRecipeId(Long recipeId);
 }

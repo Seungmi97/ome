@@ -3,6 +3,7 @@ package com.ome.repository.auth;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +20,9 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 	boolean existsByEmail(String email);
     // 승인된 작가 목록 가져오기
     List<Users> findAllByRoleAndApprovedTrue(Role role);
+    
+    // 유저 정보 + 북마크 리스트까지 미리 DB에서 꺼냄 
+    @EntityGraph(attributePaths = "bookmarks")
+    Optional<Users> findWithBookmarksById(Long id);
 
 }
