@@ -1,33 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export default function RecipeUploadForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [content, setContent] = useState(''); // ✅ content 추가
-  const [category, setCategory] = useState('');
-  const [availableCategories, setAvailableCategories] = useState([]);
+  const [content, setContent] = useState('');
+  const [category, setCategory] = useState(''); // ✅ 반드시 필요
   const [ingredients, setIngredients] = useState([]);
   const [ingredientInput, setIngredientInput] = useState('');
   const [isPremium, setIsPremium] = useState('free');
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
 
-  // 카테고리 enum 목록 불러오기
-  useEffect(() => {
-    axios.get('/api/recipes/categories', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    })
-      .then(res => {
-        setAvailableCategories(res.data);
-      })
-      .catch(err => {
-        console.error('카테고리 목록 불러오기 실패', err);
-      });
-  }, []);
+  // ✅ 카테고리 선택지 하드코딩
+  const categoryOptions = [
+    { label: '한식', value: 'korean' },
+    { label: '양식', value: 'western' },
+    { label: '일식', value: 'japanese' },
+    { label: '중식', value: 'chineses' },
+    { label: '디저트', value: 'dessert' },
+    { label: '비건', value: 'vegan' },
+    { label: '기타', value: 'etc' },
+  ];
 
   const handleAddIngredient = () => {
     if (ingredientInput.trim() !== '') {
@@ -112,16 +107,18 @@ export default function RecipeUploadForm() {
         <div>
           <label className="block font-semibold mb-1">카테고리</label>
           <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value.toLowerCase())}
-          className="w-full border border-gray-300 rounded px-3 py-2"
-        >
-          <option value="">카테고리를 선택하세요</option>
-          {availableCategories.map((cat, idx) => (
-            <option key={idx} value={cat.toLowerCase()}>{cat}</option>
-          ))}
-        </select>
-
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            required
+          >
+            <option value="">카테고리를 선택하세요</option>
+            {categoryOptions.map((cat, idx) => (
+              <option key={idx} value={cat.value}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* 재료 */}
