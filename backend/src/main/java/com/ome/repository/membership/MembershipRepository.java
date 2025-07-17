@@ -15,4 +15,6 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
     // 또는 userId 기준 조회도 가능
     Optional<Membership> findByUserId(Long userId);
+
+     boolean existsByUserId(Long userId);
 }

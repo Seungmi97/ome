@@ -1,7 +1,5 @@
 package com.ome.dto.mypage.response;
 
-
-
 import com.ome.domain.Users;
 
 import lombok.Getter;
@@ -13,15 +11,17 @@ public class AdminMyPageResponseDto {
 	private String userId;
 	private String username;
 	private String email;
-	private int totlaUsers;
+	private int totalUsers;
 	private int pendingCreators;
+	private int creatorCount;
 	
-	public AdminMyPageResponseDto(Users user) {
+	public AdminMyPageResponseDto(Users user, int totalUsers, int pendingCreators, int approvedCreators) {
 		this.userId = user.getUserId();
 		this.username = user.getUsername();
 		this.email = user.getEmail();
-		this.totlaUsers = 0;
-		this.pendingCreators = 0;
+		this.totalUsers = totalUsers;
+		this.pendingCreators = pendingCreators;
+		this.creatorCount = approvedCreators;
 	}
 
 }
