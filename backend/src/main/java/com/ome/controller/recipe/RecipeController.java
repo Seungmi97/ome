@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ome.common.enums.Category;
 import com.ome.common.enums.PremiumType;
+import com.ome.common.enums.RecipeCategory;
 import com.ome.common.enums.Role;
 import com.ome.dto.recipe.request.RecipeRequestDto;
 import com.ome.dto.recipe.request.RecipeUpdateDto;
@@ -72,7 +73,16 @@ public class RecipeController {
         
         return ResponseEntity.ok(Map.of("recipeId", recipeId));
     }
-    
+
+    /**
+     * 레시피 카테고리 목록 조회
+     * @return
+     */
+    @GetMapping("/categories")
+    public ResponseEntity<?> getAllCategories() {
+        RecipeCategory[] categories = RecipeCategory.values();
+        return ResponseEntity.ok(categories);
+    }
     
     /**
      * 레시피 전체 목록 조회(검색, 필터링, 페이징)
@@ -151,8 +161,6 @@ public class RecipeController {
         recipeService.deleteRecipe(user.getId(), recipeId);
         return ResponseEntity.ok("레시피 삭제 완료");
     }
-
-
     
 
 }

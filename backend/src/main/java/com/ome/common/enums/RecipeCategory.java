@@ -1,5 +1,5 @@
 package com.ome.common.enums;
 
 public enum RecipeCategory {
-    korean, western, japanese, chineses, dessert, vegan, etc
+    korean, western, japanese, chinese, dessert, vegan, etc
 }
