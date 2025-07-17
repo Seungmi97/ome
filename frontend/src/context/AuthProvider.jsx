@@ -2,17 +2,13 @@ import { useEffect, useState, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from './AuthContext';
 import { refresh as refreshAPI, getMyProfile } from '@/services/authAPI';
-import '@/types/User'; // 🔥 JSDoc 타입 인식용 (자동완성 가능하게 함)
 
 export const AuthProvider = ({ children }) => {
-  /** @type {[User|null, Function]} */
   const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(() => localStorage.getItem('accessToken'));
+  const [loading, setLoading] = useState(true); // ✅ 추가됨
 
-  const [accessToken, setAccessToken] = useState(() => {
-    return localStorage.getItem('accessToken') || null;
-  });
-
-  const isAuthenticated = !!accessToken;
+  const isAuthenticated = !!accessToken && !!user;
 
   const logout = useCallback(() => {
     setUser(null);
@@ -41,52 +37,55 @@ export const AuthProvider = ({ children }) => {
     [fetchUserProfile]
   );
 
+  // ✅ 최초 마운트 시 accessToken 있으면 프로필 조회
   useEffect(() => {
-    if (!accessToken) return;
-
-    try {
-      const decoded = jwtDecode(accessToken);
-      const exp = decoded.exp * 1000;
-      const now = Date.now();
-      const buffer = 30 * 1000;
-
-      if (exp < now) {
-        logout();
-      } else {
-        const timeout = setTimeout(async () => {
-          try {
-            const res = await refreshAPI();
-            const newAccessToken = res.data.accessToken;
-            setAccessToken(newAccessToken);
-            localStorage.setItem('accessToken', newAccessToken);
-            console.log('🔄 accessToken 자동 갱신됨');
-            await fetchUserProfile();
-          } catch (err) {
-            console.error('refresh 실패', err);
-            logout();
-            alert('세션이 만료되어 로그아웃되었습니다.');
-          }
-        }, exp - now - buffer);
-
-        return () => clearTimeout(timeout);
+    const restore = async () => {
+      if (!accessToken) {
+        setLoading(false);
+        return;
       }
-    } catch (err) {
-      console.error('JWT decode 실패:', err);
-      logout();
-    }
+
+      try {
+        const decoded = jwtDecode(accessToken);
+        const exp = decoded.exp * 1000;
+        const now = Date.now();
+        const buffer = 30 * 1000;
+
+        if (exp < now) {
+          logout();
+        } else {
+          await fetchUserProfile(); // ✅ 유저 상태 복구
+          const timeout = setTimeout(async () => {
+            try {
+              const res = await refreshAPI();
+              const newAccessToken = res.data.accessToken;
+              localStorage.setItem('accessToken', newAccessToken);
+              setAccessToken(newAccessToken);
+              console.log('🔄 accessToken 자동 갱신됨');
+              await fetchUserProfile();
+            } catch (err) {
+              console.error('refresh 실패', err);
+              logout();
+              alert('세션이 만료되어 로그아웃되었습니다.');
+            }
+          }, exp - now - buffer);
+
+          return () => clearTimeout(timeout);
+        }
+      } catch (err) {
+        console.error('JWT decode 실패:', err);
+        logout();
+      } finally {
+        setLoading(false); // ✅ 무조건 완료됨
+      }
+    };
+
+    restore();
   }, [accessToken, fetchUserProfile, logout]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        accessToken,
-        isAuthenticated,
-        login,
-        logout,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={{ user, accessToken, isAuthenticated, login, logout }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

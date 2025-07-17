@@ -17,11 +17,13 @@ const FilterSidebar = ({ keywords = [], onRemoveKeyword, onReset }) => {
       <nav className="space-y-4">
         <SidebarItem icon={<Home size={18} />} label="Home" onClick={onReset} />
 
-        {isAuthenticated && (role === 'user' || role === 'creator') && (
+        {isAuthenticated && (role === 'USER' || role === 'CREATOR') && (
           <SidebarItem icon={<Folder size={18} />} label="멤버십 관리" />
         )}
-
-        {role === 'creator' && (
+        {isAuthenticated && (role === 'USER' || role === 'CREATOR') && (
+          <SidebarItem icon={<Folder size={18} />} label="마이페이지 " />
+        )}
+        {role === 'CREATOR' && (
           <SidebarItem icon={<Settings size={18} />} label="크리에이터 관리페이지" />
         )}
       </nav>
