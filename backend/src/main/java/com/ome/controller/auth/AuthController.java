@@ -60,6 +60,25 @@ public class AuthController {
 		return ResponseEntity.ok(new LoginResponseDto("로그인 성공",token));
 	}
 	
+	// 🔴 아이디 찾기 -> email 파람 값으로 받아 id 찾기
+	@GetMapping("/find-id")
+	public ResponseEntity<?> findByUserId(@RequestParam String email) {
+		return authService.findUserIdByEmail(email)
+				.map(userId -> ResponseEntity.ok().body("회원님의 아이디는 : "+ userId +" 입니다."))
+				.orElse(ResponseEntity.badRequest().body("해당 이메일로 가입된 아이디가 없습니다."));
+	}
+	
+	// 🔴 비밀번호 초기화 -> 이메일과 아이디를 인증하고나서 임시 비밀번호 발급하기 
+	@PostMapping("/reset-password")
+	public ResponseEntity<?> resetPassword(@RequestParam String userId , @RequestParam String  email) {
+		try {
+			String newPassword = authService.resetPassword(userId, email);
+			return ResponseEntity.ok("임시 비밀번호가 발급되었습니다 : " +newPassword);
+		}catch(IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+	
 	// 🔴 로그아웃 
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(@AuthenticationPrincipal CustomUserDetails user, HttpServletResponse response){
