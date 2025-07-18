@@ -30,7 +30,7 @@ const Header = ({ onReset }) => {
           className="flex items-center gap-2 flex-shrink-0 cursor-pointer"
           onClick={handleLogoClick}
         >
-          <img src={logo} alt="OME 로고" className="h-16 w-auto invert-0 dark:invert" />
+          <img src={logo} alt="OME 로고" className="h-20 w-auto invert-0 dark:invert" />
         </div>
 
         {/* 우측 인증 관련 영역 */}

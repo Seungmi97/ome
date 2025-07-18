@@ -13,6 +13,11 @@ import RecipeManage from "@/pages/admin/RecipeManage";
 import Unauthorized from '@/pages/public/Unauthorized';
 import UserMainpage from "@/pages/user/UserMainpage";
 import CreatorMainpage from "@/pages/creator/CreatorMainpage";
+import CreatorDashboard from "@/pages/creator/CreatorDashboard";
+import CreatorDashboardRecipeViewContent from "@/pages/creator/CreatorDashboardRecipeViewContent";
+import CreatorDashboardLayout from "@/layouts/CreatorDashboardLayout";
+import CreatorDashboardUserViewContent from "@/pages/creator/CreatorDashboardUserViewContent";
+import CreatorDashboardSummaryContent from "@/pages/creator/CreatorDashboardSummaryContent";
 
 export default function App() {
   return (
@@ -30,6 +35,14 @@ export default function App() {
       <Route element={<ProtectedRoute role="CREATOR" />}>
         <Route path="/creator/main" element={<CreatorMainpage />} />
         <Route path="/creator/recipes/upload" element={<RecipeUploadForm />} />
+        {/* 크리에이터 대시보드 레이아웃 (중첩) */}
+        <Route path="/creator" element={<CreatorDashboardLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<CreatorDashboard />} />
+          <Route path="users" element={<CreatorDashboardUserViewContent />} />
+          <Route path="recipes" element={<CreatorDashboardRecipeViewContent />} />
+          <Route path="stats" element={<CreatorDashboardSummaryContent />} />
+        </Route>
       </Route>
 
       {/* 관리자 보호 라우트 + 레이아웃 */}
