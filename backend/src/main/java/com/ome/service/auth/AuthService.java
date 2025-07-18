@@ -1,3 +1,4 @@
+
 package com.ome.service.auth;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -6,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ome.domain.Users;
 import com.ome.common.constants.ImageConstants;
+
 import com.ome.common.enums.CreatorStatus;
 import com.ome.common.enums.MemberState;
 import com.ome.common.enums.Role;
@@ -75,6 +77,7 @@ public class AuthService {
 				.profileImage(profileImageUrl) 
 				.build();
 		
+
 		Users savedUser = repository.save(user); 
 		
 		// 멤버십 초기화 호출

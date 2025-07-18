@@ -1,3 +1,4 @@
+
 package com.ome.repository.auth;
 
 import java.util.List;
@@ -70,5 +71,3 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
 
 }
-
-
