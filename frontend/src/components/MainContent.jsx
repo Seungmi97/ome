@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import RecipeCard from './RecipeCard';
 import SkeletonCard from './SkeletonCard';
 import { getRecipeList } from '@/services/recipeAPI';
 
-const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) => {
+export default function MainContent({ keywords, onAddKeyword, visibleCount, setVisibleCount }) {
   const [inputValue, setInputValue] = useState('');
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
         setLoading(true);
-
         const params = {
           offset: 0,
           limit: visibleCount,
           keywords: keywords.join(','),
         };
-
         const response = await getRecipeList(params);
         setRecipes(response.data?.content || []);
       } catch (err) {
@@ -38,10 +40,25 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
     }
   };
 
+  // 카드 리스트 (콘솔 디버깅 포함)
+  const recipeCards = recipes.map((item) => {
+    console.log('[MainContent] item:', item); 
+    return (
+      <RecipeCard
+        key={item.recipeId}
+        id={item.recipeId}
+        title={item.title}
+        imageUrl={item.imageUrl}
+        isPremium={item.isPremium}
+        bookmarkCount={item.bookmarkCount || 0}
+      />
+    );
+  });
+
   return (
     <div className="flex-1 px-4">
-      {/* 검색바 */}
-      <div className="mb-4">
+      {/* 상단 검색 & 버튼 */}
+      <div className="mb-4 flex justify-between items-center flex-wrap gap-2">
         <input
           type="text"
           value={inputValue}
@@ -53,38 +70,28 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
             bg-white text-black dark:bg-gray-800 dark:text-white
             border-gray-300 dark:border-gray-600"
         />
-      </div>
-
-      {/* 카드 목록 or 스켈레톤 */}
-      <div className="flex flex-wrap gap-6">
-        {/* 🔧 테스트용 더미 카드 */}
-        <RecipeCard
-          id="dummy-id"
-          title="더미 레시피"
-          imageUrl="/src/assets/food.jpg"
-          isPremium={false}
-          bookmarkCount={123}
-        />
-
-        {loading ? (
-          Array.from({ length: 8 }).map((_, idx) => <SkeletonCard key={idx} />)
-        ) : recipes.length > 0 ? (
-          recipes.map((item) => (
-            <RecipeCard
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              imageUrl={item.imageUrl}
-              isPremium={item.isPremium}
-              bookmarkCount={item.bookmarkCount || 0}
-            />
-          ))
-        ) : (
-          <p className="text-center text-gray-500">레시피가 없습니다.</p>
+        {user?.role === 'CREATOR' && (
+          <button
+            onClick={() => navigate('/creator/recipes/upload')}
+            className="flex items-center gap-1 bg-purple-100 hover:bg-purple-200 text-purple-800
+              font-medium px-4 py-2 rounded transition whitespace-nowrap"
+          >
+            ＋ 레시피 생성하기
+          </button>
         )}
       </div>
 
-      {/* 더보기 */}
+      {/* 레시피 카드 목록 */}
+      <div className="flex flex-wrap gap-6">
+        {loading
+          ? Array.from({ length: 8 }).map((_, idx) => <SkeletonCard key={idx} />)
+          : recipes.length > 0
+          ? recipeCards
+          : <p className="text-center text-gray-500">레시피가 없습니다.</p>
+        }
+      </div>
+
+      {/* 더보기 버튼 */}
       {!loading && recipes.length >= visibleCount && (
         <div className="mt-6 text-center">
           <button
@@ -97,6 +104,4 @@ const MainContent = ({ keywords, onAddKeyword, visibleCount, setVisibleCount }) 
       )}
     </div>
   );
-};
-
-export default MainContent;
+}

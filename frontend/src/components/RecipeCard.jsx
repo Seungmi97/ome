@@ -4,6 +4,7 @@ import { Heart } from 'lucide-react';
 
 const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount }) => {
   const navigate = useNavigate();
+  const isPaid = isPremium === true || isPremium === 'true' || isPremium === 'premium';
 
   return (
     <div
@@ -34,13 +35,12 @@ const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount }) => {
       <div className="flex justify-between items-center mt-auto">
         {/* 유/무료 */}
         <span
-          className={`text-xs font-bold px-2 py-0.5 rounded ${
-            isPremium
+          className={`text-xs font-bold px-2 py-0.5 rounded ${isPaid
               ? 'bg-amber-100 text-amber-700'
               : 'bg-green-100 text-green-700'
-          }`}
+            }`}
         >
-          {isPremium ? '유료' : '무료'}
+          {isPaid ? '유료' : '무료'}
         </span>
 
         {/* 찜 수 */}

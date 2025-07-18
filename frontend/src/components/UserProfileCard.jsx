@@ -25,7 +25,7 @@ const UserProfileCard = ({ imageUrl, name, role, plan }) => {
             {role === 'creator' ? '크리에이터' : '일반유저'}
           </span>
         </p>
-        <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">{plan || '프리 플랜'}</p>
+        <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">{plan || '플랜 조회 실패'}</p>
       </div>
       <button
         onClick={logout}

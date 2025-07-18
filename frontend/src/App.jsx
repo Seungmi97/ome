@@ -2,17 +2,22 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import PublicRoutes from "@/route/PublicRoute";
 import ProtectedRoute from "@/route/ProtectedRoute";
 
+import RecipeUploadForm from "@/pages/creator/RecipeUploadForm";
+
 import AdminDashboardLayout from "@/layouts/AdminDashboardLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import ApproveManage from "@/pages/admin/ApproveManage";
 import UserManage from "@/pages/admin/UserManage";
 import ReportManage from "@/pages/admin/ReportManage";
-import CommentManage from "@/pages/admin/CommentManage";
 import RecipeManage from "@/pages/admin/RecipeManage";
-import QnAManage from "@/pages/admin/QnAManage";
 import Unauthorized from '@/pages/public/Unauthorized';
 import UserMainpage from "@/pages/user/UserMainpage";
 import CreatorMainpage from "@/pages/creator/CreatorMainpage";
+import CreatorDashboard from "@/pages/creator/CreatorDashboard";
+import CreatorDashboardRecipeViewContent from "@/pages/creator/CreatorDashboardRecipeViewContent";
+import CreatorDashboardLayout from "@/layouts/CreatorDashboardLayout";
+import CreatorDashboardUserViewContent from "@/pages/creator/CreatorDashboardUserViewContent";
+import CreatorDashboardSummaryContent from "@/pages/creator/CreatorDashboardSummaryContent";
 
 export default function App() {
   return (
@@ -29,6 +34,15 @@ export default function App() {
       {/* 크리에이터 보호 라우트 */}
       <Route element={<ProtectedRoute role="CREATOR" />}>
         <Route path="/creator/main" element={<CreatorMainpage />} />
+        <Route path="/creator/recipes/upload" element={<RecipeUploadForm />} />
+        {/* 크리에이터 대시보드 레이아웃 (중첩) */}
+        <Route path="/creator" element={<CreatorDashboardLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<CreatorDashboard />} />
+          <Route path="users" element={<CreatorDashboardUserViewContent />} />
+          <Route path="recipes" element={<CreatorDashboardRecipeViewContent />} />
+          <Route path="stats" element={<CreatorDashboardSummaryContent />} />
+        </Route>
       </Route>
 
       {/* 관리자 보호 라우트 + 레이아웃 */}

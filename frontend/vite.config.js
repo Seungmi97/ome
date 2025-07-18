@@ -20,12 +20,19 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: false, // 배포 시 소스맵 제거 (보안)
+    sourcemap: false,
     minify: 'esbuild',
     outDir: 'dist',
   },
   server: {
     port: 5173,
-    open: true, // 자동 브라우저 오픈
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8081', // ✅ Spring Boot 서버 주소
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 })
