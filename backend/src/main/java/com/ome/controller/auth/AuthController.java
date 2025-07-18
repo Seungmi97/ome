@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ome.dto.auth.request.LoginRequestDto;
 import com.ome.dto.auth.request.SignupRequestDto;
@@ -16,6 +17,7 @@ import com.ome.dto.auth.response.LoginResponseDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.service.auth.AuthService;
 import com.ome.service.auth.CustomUserDetails;
+import com.ome.service.auth.FileUploadService;
 import com.ome.util.JwtUtil;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,7 +31,17 @@ public class AuthController {
 	
 	private final AuthService authService;
 	private final UserRepository userRepository;
+	private final FileUploadService fileUploadService;
 	private final JwtUtil jwtUtil;
+	
+	
+	// 🔴 프로필 이미지 업로드 api 
+	@PostMapping("/upload-profile") 
+	public ResponseEntity<String> uploadProfileImage(@RequestParam("file") MultipartFile file)
+	{
+		String imageUrl = fileUploadService.uploadProfileImage(file);
+		return ResponseEntity.ok(imageUrl);
+	}
 	
 	// 🔴 회원 가입 
 	@PostMapping("/signup")
