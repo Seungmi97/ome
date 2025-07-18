@@ -1,3 +1,4 @@
+
 package com.ome.service.auth;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -5,6 +6,8 @@ import org.springframework.security.web.server.header.CacheControlServerHttpHead
 import org.springframework.stereotype.Service;
 
 import com.ome.domain.Users;
+import com.ome.common.constants.ImageConstants;
+
 import com.ome.common.enums.CreatorStatus;
 import com.ome.common.enums.MemberState;
 import com.ome.common.enums.Role;
@@ -56,6 +59,13 @@ public class AuthService {
 		boolean approved = dto.isApplyAsCreator() ? false : true; // 작가 신청하면 -> 작가 승인이 false로 됨.
 		CreatorStatus creatorStatus = dto.isApplyAsCreator() ? CreatorStatus.PENDING : CreatorStatus.APPROVED;
 		
+		
+		// 프로필 이미지 기본 경로 설정
+		String profileImageUrl = dto.getProfileImage();
+		if (profileImageUrl == null || profileImageUrl.isBlank()) {
+		    profileImageUrl = ImageConstants.DEFAULT_PROFILE_IMAGE_URL;; 
+		}
+		
 		Users user = Users.builder()
 				.userId(dto.getUserId())
 				.username(dto.getUsername())
@@ -64,8 +74,10 @@ public class AuthService {
 				.role(role) // ROLE_USER와 ROLE_CREATOR만 허용
 				.approved(approved) // 작가 승인 default 값으로 false 지정
 				.creatorStatus(creatorStatus) 
+				.profileImage(profileImageUrl) 
 				.build();
 		
+
 		Users savedUser = repository.save(user); 
 		
 		// 멤버십 초기화 호출

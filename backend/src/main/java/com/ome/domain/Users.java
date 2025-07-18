@@ -19,8 +19,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,6 +63,10 @@ public class Users {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false) 
     private CreatorStatus creatorStatus;
+    
+    // 프로필 이미지 추가 
+    @Column(name = "profile_image")
+    private String profileImage;
 
     // 연관관계: 1:1 Membership
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -73,6 +75,11 @@ public class Users {
     // 연관관계: 1:N Recipes
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recipe> recipes = new ArrayList<>();
+    
+    // 연관관계: 1:N Bookmarks
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Bookmark> bookmarks = new ArrayList<>();
+ 
 
     // 헬퍼 메서드 (멤버쉽 자동 추가)
     public void setMembership(Membership membership) {
@@ -88,10 +95,20 @@ public class Users {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     
-    //헬퍼 메소드 
+    
     public void addRecipe(Recipe recipe) {
         this.recipes.add(recipe);
         recipe.setWriter(this);
+    }
+    
+    public void addBookmark(Bookmark bookmark) {
+        bookmarks.add(bookmark);
+        bookmark.setUser(this);
+    }
+    
+    public void removeBookmark(Bookmark bookmark) {
+        bookmarks.remove(bookmark);
+        bookmark.setUser(null);
     }
 
 }

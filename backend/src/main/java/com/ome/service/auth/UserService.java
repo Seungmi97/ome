@@ -1,3 +1,4 @@
+
 package com.ome.service.auth;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +13,7 @@ import com.ome.dto.mypage.response.AdminMyPageResponseDto;
 import com.ome.dto.mypage.response.CreatorMyPageResponseDto;
 import com.ome.dto.mypage.response.UserMyPageResponseDto;
 import com.ome.repository.auth.UserRepository;
+import com.ome.repository.bookmark.BookmarkRepository;
 import com.ome.repository.recipe.RecipeRepository;
 
 import jakarta.transaction.Transactional;
@@ -24,6 +26,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final RecipeRepository recipeRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final BookmarkRepository bookmarkRepository;
 	
 	// 🔴 회원 탈퇴 
 	public void deleteUser(String userId) {
@@ -34,8 +37,11 @@ public class UserService {
 	
 	//🔴 마이페이지 정보 조회 ( 역할별 분기 )
 	public Object getMyPage(String userId) {
-		Users user = userRepository.findByUserId(userId)
-				.orElseThrow(()-> new RuntimeException("사용자 정볼르 찾을 수 없습니다."));
+		 Users baseUser = userRepository.findByUserId(userId)
+			        .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
+		Long id = baseUser.getId();
+		Users user = userRepository.findWithBookmarksById(id)
+				.orElseThrow(()-> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
 		
 		int recipeCount = recipeRepository.countByWriter_UserId(userId); 
 		////List<CreatorSumaryDto> likedCreator = likeService.getLikedCreators(user); // 작가 찜 목록 (추후 팀원 코드 참고하여 수정)
@@ -45,17 +51,20 @@ public class UserService {
         	int totalUsers = userRepository.countAllUsers();
         	int pending = userRepository.countByCreatorStatus(CreatorStatus.PENDING);
 			int approved = userRepository.countByRole(Role.CREATOR);
-            return new AdminMyPageResponseDto(user, totalUsers, pending , approved);  // Admin 전용 DTO
+			int membershipCount = userRepository.countMembershipUsers();
+            return new AdminMyPageResponseDto(user, totalUsers, pending , approved,membershipCount);  // Admin 전용 DTO
         // 🌟 작가일 경우 -> 찜 수 , 구독자 목록 수 , 내가 올린 레시피 수
         case CREATOR:
-        	// 찜 수 나중에 연결 필요
-        	int likeCount = 0;
+        	// 북마크 수
+        	int totalLikes = bookmarkRepository.countByRecipe_Writer_UserId(userId);
+
         	// 구독 시스템 나중에 연결 필요
         	int subscriberCount = 0;
-            return new CreatorMyPageResponseDto(user, subscriberCount,recipeCount , likeCount); //  (user, likedCreators)
+            return new CreatorMyPageResponseDto(user, subscriberCount,recipeCount , totalLikes); 
         case USER:
         default:
-            return new UserMyPageResponseDto(user); //  (user, likedCreators)
+        	int bookmarkCount = user.getBookmarks().size();
+            return new UserMyPageResponseDto(user, bookmarkCount); //  (user, likedCreators)
     }
 	}
 	
@@ -83,9 +92,11 @@ public class UserService {
 		
 		// 비밀번호 비어있지 않고 null 값이 아닐 경우 입력 받은 이메일로 수정 
 		if(dto.getPassword() != null && !dto.getPassword().isBlank()) {
-			user.setPassword(dto.getPassword());
+			String encodedPassword = passwordEncoder.encode(dto.getPassword());
+			user.setPassword(encodedPassword);
 		}
 		
 		userRepository.save(user);
 	}
+
 }

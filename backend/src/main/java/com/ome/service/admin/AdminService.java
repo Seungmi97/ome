@@ -46,11 +46,12 @@ public class AdminService {
 		Users user = userRepository.findByUserId(userId)
 				.orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다. userId: "+userId));
 		
-		/// 일반 사용자인 경우는 작가 승인을 못하게 설정함!!
-		if (user.getCreatorStatus() != CreatorStatus.PENDING) {
-	        throw new IllegalStateException("작가 승인 대상이 아닙니다. 현재 상태: " + user.getCreatorStatus());
-	    }
-		
+		// 이미 승인된 경우 막기 
+		if(user.getCreatorStatus() == CreatorStatus.APPROVED) {
+			throw new IllegalStateException("이미 승인된 사용자입니다.");
+		}
+				
+		//나머지는 승인 가능하도록 설정 ( PENDING -> APPROVE 가능 REJECT -> APPROVE 가능!! (실수로 관리자가 REJECT 한 경우 고려))
 		user.setCreatorStatus(CreatorStatus.APPROVED);
 		user.setRole(Role.CREATOR);
 		user.setApproved(true);
@@ -62,13 +63,20 @@ public class AdminService {
 		Users user = userRepository.findByUserId(userId)
 				.orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다. userId: "+userId));
 		
-		/// 일반 사용자인 경우는 작가 승인을 못하게 설정함!!
-				if (user.getCreatorStatus() != CreatorStatus.PENDING) {
-			        throw new IllegalStateException("작가 승인 대상이 아닙니다. 현재 상태: " + user.getCreatorStatus());
-			    }
+		// 이미 거절된 경우는 막음 
+		if(user.getCreatorStatus() == CreatorStatus.REJECTED) {
+			throw new IllegalStateException("이미 거절된 사용자입니다.");
+		}
 		
+		//상태 변경하기 
 		user.setCreatorStatus(CreatorStatus.REJECTED);
 		user.setApproved(false);
+		
+		// 작가 권한이였다가 -> 일반 user로 강등 및 작가 권한 회수하기
+		if(user.getRole() == Role.CREATOR) {
+			user.setRole(Role.USER);
+		}
+		
 	}
 	
 	
@@ -93,7 +101,7 @@ public class AdminService {
 	
 	
 	
-	// 🔴 작가 전체 목록 조회하시 (키워드 검색 포함  + 페이징 처리 ) 
+	// 🔴 작가 전체 목록 조회하기 (키워드 검색 포함  + 페이징 처리 ) 
 	public Page<UserDto> getAllCreators(String keyword, int page, int size) {
 		Pageable pageable = PageRequest.of(page , size);
 		 String pattern = "%" + keyword + "%";
