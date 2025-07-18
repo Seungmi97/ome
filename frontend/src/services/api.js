@@ -11,7 +11,14 @@ const api = axios.create({
 // 토큰 자동 삽입, 에러 핸들링 등 글로벌 설정도 가능
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+    console.log('[✅ Auth Header Attached]', config.headers.Authorization);
+  } else {
+    console.warn('[❌ No accessToken — Auth header NOT attached]');
+  }
+
   return config;
 });
 

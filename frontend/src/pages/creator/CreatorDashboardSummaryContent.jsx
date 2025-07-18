@@ -64,7 +64,7 @@ export default function CreatorDashboardSummaryContent() {
 
       {/* 바 차트 */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">레시피 별 수익 통계</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">레시피별 찜수 통계</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={platformData}>
             <CartesianGrid strokeDasharray="3 3" />
