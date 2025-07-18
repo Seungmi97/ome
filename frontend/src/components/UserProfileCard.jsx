@@ -22,7 +22,7 @@ const UserProfileCard = ({ imageUrl, name, role, plan }) => {
         <p className="text-lg font-semibold text-gray-800 dark:text-white">
           {name}
           <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-purple-200 text-purple-800 font-medium">
-            {role === 'creator' ? '크리에이터' : '일반유저'}
+            {role === 'CREATOR' ? '크리에이터' : '일반유저'}
           </span>
         </p>
         <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">{plan || '플랜 조회 실패'}</p>
