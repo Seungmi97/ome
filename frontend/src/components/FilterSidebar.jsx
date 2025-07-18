@@ -1,10 +1,12 @@
 import React from 'react';
 import { Home, Folder, Settings } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const FilterSidebar = ({ keywords = [], onRemoveKeyword, onReset }) => {
   const { isAuthenticated, user } = useAuth();
   const role = user?.role;
+  const navigate = useNavigate();
 
   return (
     <aside className="w-64 h-fit min-h-screen bg-white dark:bg-gray-800 text-black dark:text-white px-6 py-8 space-y-8 shadow-md border-r border-gray-200 dark:border-gray-700">
@@ -24,7 +26,11 @@ const FilterSidebar = ({ keywords = [], onRemoveKeyword, onReset }) => {
           <SidebarItem icon={<Folder size={18} />} label="마이페이지 " />
         )}
         {role === 'CREATOR' && (
-          <SidebarItem icon={<Settings size={18} />} label="크리에이터 관리페이지" />
+          <SidebarItem
+            icon={<Settings size={18} />}
+            label="크리에이터 관리페이지"
+            onClick={() => navigate('/creator/dashboard')} 
+          />
         )}
       </nav>
 

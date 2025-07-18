@@ -3,56 +3,57 @@ import { useParams } from 'react-router-dom';
 import { getRecipeDetail } from '../../services/recipeAPI.js'; // API 호출 함수
 
 const RecipeDetail = () => {
-    // URL 파라미터에서 레시피 ID 추출
-    const { recipeId } = useParams();
-    // 상태 관리 (데이터,로딩,에러)
-    const [recipe, setRecipe] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  // URL 파라미터에서 레시피 ID 추출
+  const { recipeId } = useParams();
+  // 상태 관리 (데이터,로딩,에러)
+  const [recipe, setRecipe] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    // 데이터 로딩
-    useEffect(() => {
-        const fetchRecipeData = async () => {
-            try {
-                setLoading(true);
-                const data = await getRecipeDetail(recipeId);
-                setRecipe(data);
-            } catch (err) {
-                setError(err.message || '레시피를 불러오는 중 오류가 발생했습니다.');
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchRecipeData();
-    }, [recipeId]); // recipeId가 바뀔때마다 다시 실행 
+  // 데이터 로딩
+  useEffect(() => {
+    console.log('[RecipeDetail] recipeId:', recipeId);
+    const fetchRecipeData = async () => {
+      try {
+        setLoading(true);
+        const response = await getRecipeDetail(recipeId);
+        setRecipe(response.data);
+      } catch (err) {
+        setError(err.message || '레시피를 불러오는 중 오류가 발생했습니다.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRecipeData();
+  }, [recipeId]); // recipeId가 바뀔때마다 다시 실행 
 
-    // loading UI
-    if (loading) {
-        return( 
-        <div className='flex justify-center items-center h-screen'>
-            <p className='text-center text-gray-500'>레시피를 불러오는 중입니다...</p> 
-        </div>
-        );
-    }
-    // error UI
-    if (error) {
-        return (
-            <div className='flex justify-center items-center h-screen'>
-                <p className='text-center text-red-500'>{error}</p>
-            </div>
-        );
-    }
-    // 데이터 없을 때 UI
-    if (!recipe) {
-        return (
-            <div className='flex justify-center items-center h-screen'>
-                <p className='text-center text-gray-500'>레시피를 찾을 수 없습니다.</p>
-            </div>
-        );
-    }
-    // 데이터 로딩 성공 시 UI
+  // loading UI
+  if (loading) {
     return (
+      <div className='flex justify-center items-center h-screen'>
+        <p className='text-center text-gray-500'>레시피를 불러오는 중입니다...</p>
+      </div>
+    );
+  }
+  // error UI
+  if (error) {
+    return (
+      <div className='flex justify-center items-center h-screen'>
+        <p className='text-center text-red-500'>{error}</p>
+      </div>
+    );
+  }
+  // 데이터 없을 때 UI
+  if (!recipe) {
+    return (
+      <div className='flex justify-center items-center h-screen'>
+        <p className='text-center text-gray-500'>레시피를 찾을 수 없습니다.</p>
+      </div>
+    );
+  }
+  // 데이터 로딩 성공 시 UI
+  return (
     <div className="bg-white">
       <div className="max-w-4xl mx-auto my-8 p-4 md:p-8">
         {/* 레시피 제목 */}
@@ -61,22 +62,22 @@ const RecipeDetail = () => {
         </h1>
 
         {/* 작성자 정보 */}
-      {recipe.author?.name && (
-        <div className="flex items-center mb-6 text-gray-600">
-          <span>
-            By <span className="font-semibold text-gray-800">{recipe.author.name}</span>
-          </span>
-        </div>
-      )}
+        {recipe.author?.name && (
+          <div className="flex items-center mb-6 text-gray-600">
+            <span>
+              By <span className="font-semibold text-gray-800">{recipe.author.name}</span>
+            </span>
+          </div>
+        )}
 
-      {/* 이미지 */}
-      {recipe.imageUrl && (
-        <img
-          src={recipe.imageUrl}
-          alt={recipe.title}
-          className="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg mb-8"
-        />
-      )}
+        {/* 이미지 */}
+        {recipe.imageUrl && (
+          <img
+            src={recipe.imageUrl}
+            alt={recipe.title}
+            className="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg mb-8"
+          />
+        )}
 
 
         {/* 레시피 설명 */}
