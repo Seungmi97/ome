@@ -67,6 +67,10 @@ public class Recipe {
     // 연관관계: 1:N Bookmarks
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();
+    
+    // 연관관계: 1:N Comments
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @Column(name = "created_at", updatable = false,
             columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
@@ -81,7 +85,6 @@ public class Recipe {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-    
 
     @PreUpdate
     public void onUpdate() {

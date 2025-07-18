@@ -76,7 +76,6 @@ public class Users {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();
  
-
     // 헬퍼 메서드 (멤버쉽 자동 추가)
     public void setMembership(Membership membership) {
         this.membership = membership;
