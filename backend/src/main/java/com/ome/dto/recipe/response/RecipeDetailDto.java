@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.ome.domain.Media;
 import com.ome.domain.Recipe;
-import com.ome.domain.Users;
 
 import lombok.Data;
 
