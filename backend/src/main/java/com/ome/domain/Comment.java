@@ -22,11 +22,11 @@ import lombok.Setter;
 @Setter
 public class Comment {
 
-	 @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    // 탈퇴한 사용자는 null로 세팅됨
+    // 탈퇴한 사용자는 null로 세팅
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)) 
     private Users user;
@@ -41,8 +41,11 @@ public class Comment {
     // 대댓글 구조
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Comment parent;
+    private Comment parentId;
 
+    @Column(nullable = false)
+    private boolean reported;
+    
     @Column(columnDefinition = "DATETIME")
     private LocalDateTime createdAt = LocalDateTime.now();
 

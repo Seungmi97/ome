@@ -10,7 +10,7 @@ import com.ome.domain.Bookmark;
 import com.ome.domain.Media;
 import com.ome.domain.Recipe;
 import com.ome.domain.Users;
-import com.ome.dto.recipe.response.RecipeBookmarkDto;
+import com.ome.dto.bookmark.reponse.RecipeBookmarkDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.repository.bookmark.BookmarkRepository;
 import com.ome.repository.recipe.MediaRepository;

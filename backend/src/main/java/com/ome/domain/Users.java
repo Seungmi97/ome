@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.ome.common.enums.CreatorStatus;
+import com.ome.common.enums.MemberState;
+import com.ome.common.enums.PremiumType;
 import com.ome.common.enums.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -108,6 +110,18 @@ public class Users {
     public void removeBookmark(Bookmark bookmark) {
         bookmarks.remove(bookmark);
         bookmark.setUser(null);
+    }
+    
+    public boolean canCommentOn(Recipe recipe) {
+        // 무료 사용자 && 무료 멤버십일 때만 유료 레시피 차단
+        if (this.getRole() == Role.USER
+            && this.getMembership() != null
+            && this.getMembership().getMemberState() == MemberState.free) {
+
+            return recipe.getIsPremium() != PremiumType.premium; // 프리미엄이면 댓글 못 씀
+        }
+
+        return true; // 유료 사용자, 작가, 관리자 OK
     }
 
 }
