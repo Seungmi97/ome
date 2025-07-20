@@ -27,9 +27,9 @@
 - Npm & NginX 
 
 
-[브랜치 구조]
+3) 브랜치 구조
 main    실제 배포
-dev    전체 개발 통합
+develop    전체 개발 통합
 frontend-dev    프론트 전용 통합
 feature/frontend-xxx/#1     프론트 기능 개발용
 backend-dev    백엔드 전용 통합

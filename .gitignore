@@ -154,3 +154,4 @@ application-*.properties
 .env.*
 
 !src/main/resources/application.yml
+/.metadata/
