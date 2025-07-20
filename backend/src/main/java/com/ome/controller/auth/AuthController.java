@@ -1,5 +1,6 @@
 package com.ome.controller.auth;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -55,8 +56,17 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDto request,HttpServletResponse response) {
 		String token  = authService.login(request);
-		// JWT 토큰을 헤더에 담아 응답하기 
-		response.setHeader("Authorization", "Bearer " + token);
+		// ✅ 쿠키 설정
+		ResponseCookie cookie = ResponseCookie.from("jwt", token)
+			.httpOnly(true)
+			.secure(true) 
+			.path("/")
+			.sameSite("None") // 크로스 도메인일 경우 반드시 필요
+			.maxAge(60 * 60 * 24) // 1일
+			.build();
+
+		// ✅ Set-Cookie 헤더 추가
+		response.addHeader("Set-Cookie", cookie.toString());	
 		return ResponseEntity.ok(new LoginResponseDto("로그인 성공",token));
 	}
 	
