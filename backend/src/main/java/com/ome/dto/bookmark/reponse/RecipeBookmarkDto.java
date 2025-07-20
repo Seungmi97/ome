@@ -1,4 +1,4 @@
-package com.ome.dto.recipe.response;
+package com.ome.dto.bookmark.reponse;
 
 import java.util.List;
 

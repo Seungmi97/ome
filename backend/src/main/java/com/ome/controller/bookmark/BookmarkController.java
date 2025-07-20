@@ -11,13 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.ome.common.enums.TargetType;
-import com.ome.domain.Media;
-import com.ome.domain.Recipe;
-import com.ome.dto.recipe.response.RecipeBookmarkDto;
-import com.ome.dto.recipe.response.RecipeResponseDto;
-import com.ome.repository.recipe.MediaRepository;
+import com.ome.dto.bookmark.reponse.RecipeBookmarkDto;
 import com.ome.service.auth.CustomUserDetails;
 import com.ome.service.bookmark.BookmarkService;
 

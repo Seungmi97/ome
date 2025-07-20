@@ -1,10 +1,11 @@
 package com.ome.dto.recipe.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ome.domain.Media;
 import com.ome.domain.Recipe;
-import com.ome.domain.Users;
 
 import lombok.Data;
 
@@ -19,6 +20,10 @@ public class RecipeDetailDto {
     private String isPremium;
     private String category;
     private String ingredients;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime updatedAt;
     private List<String> imageUrls; // 이미지 경로 리스트
     
 
@@ -34,6 +39,8 @@ public class RecipeDetailDto {
         dto.setIsPremium(recipe.getIsPremium().name());
         dto.setCategory(recipe.getCategory().name());
         dto.setIngredients(recipe.getIngredients());
+        dto.setCreatedAt(recipe.getCreatedAt());
+        dto.setUpdatedAt(recipe.getUpdatedAt());
         dto.setImageUrls(images.stream().map(Media::getUrl).toList()); // 이미지 URL만 추출
 
         
