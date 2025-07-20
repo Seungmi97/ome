@@ -33,4 +33,12 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     
    // 총 북마크 개수 - 작가 마이페이지
    int countByRecipe_Writer_UserId(String userId);
+   
+   // 레시피 기준 북마크 수 조회
+   Long countByRecipe(Recipe recipe);
+   
+   // 전체 레시피 북마크 수 조회
+   @Query("SELECT b.recipe.recipeId, COUNT(b) FROM Bookmark b WHERE b.recipe.recipeId IN :recipeIds GROUP BY b.recipe.recipeId")
+   List<Object[]> countBookmarksByRecipeIds(@Param("recipeIds") List<Long> recipeIds);
+   
 }

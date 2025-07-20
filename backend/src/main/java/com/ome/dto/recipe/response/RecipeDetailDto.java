@@ -25,10 +25,10 @@ public class RecipeDetailDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime updatedAt;
     private List<String> imageUrls; // 이미지 경로 리스트
-    
+    private Long bookmarkCount;
 
 
-    public static RecipeDetailDto from(Recipe recipe,  List<Media> images) {
+    public static RecipeDetailDto from(Recipe recipe,  List<Media> images, Long bookmarkCount) {
         RecipeDetailDto dto = new RecipeDetailDto();
         dto.setRecipeId(recipe.getRecipeId());
         dto.setWriterId(recipe.getWriter().getId());
@@ -42,7 +42,7 @@ public class RecipeDetailDto {
         dto.setCreatedAt(recipe.getCreatedAt());
         dto.setUpdatedAt(recipe.getUpdatedAt());
         dto.setImageUrls(images.stream().map(Media::getUrl).toList()); // 이미지 URL만 추출
-
+        dto.setBookmarkCount(bookmarkCount);
         
         return dto;
     }
