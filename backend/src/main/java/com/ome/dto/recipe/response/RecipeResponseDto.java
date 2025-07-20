@@ -24,9 +24,10 @@ public class RecipeResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime updatedAt;
     private String thumbnailUrl;
+    private Long bookmarkCount;
 
 
-    public static RecipeResponseDto from(Recipe recipe, List<Media> mediaList) {
+    public static RecipeResponseDto from(Recipe recipe, List<Media> mediaList, Long bookmarkCount) {
         RecipeResponseDto dto = new RecipeResponseDto();
         dto.setRecipeId(recipe.getRecipeId());
         dto.setWriterId(recipe.getWriter().getId());
@@ -38,6 +39,7 @@ public class RecipeResponseDto {
         dto.setCreatedAt(recipe.getCreatedAt());
         dto.setUpdatedAt(recipe.getUpdatedAt());
         dto.setThumbnailUrl(mediaList.isEmpty() ? null : mediaList.get(0).getUrl());
+        dto.setBookmarkCount(bookmarkCount);
         
         return dto;
     }
