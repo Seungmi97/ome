@@ -1,13 +1,12 @@
 package com.ome.controller.qna;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ome.dto.qna.request.QuestionRequestDto;
+import com.ome.dto.qna.response.QuestionResponseDto;
 import com.ome.service.auth.CustomUserDetails;
 import com.ome.service.qna.QuestionService;
 
@@ -24,5 +23,18 @@ public class QuestionController {
 	public ResponseEntity<String> createQuestion(@RequestBody QuestionRequestDto requestDto,
 												 @AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(questionService.createQuestion(requestDto, user.getUser()));
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id, 
+														   @AuthenticationPrincipal CustomUserDetails user){
+		return ResponseEntity.ok(questionService.getQuestion(id, user.getUser()));
+	}
+	
+	@GetMapping
+	public ResponseEntity<Page<QuestionResponseDto>> getAllQuestion(@RequestParam Long recipeId,
+																	@RequestParam(defaultValue = "0") int page,
+																	@RequestParam(defaultValue = "10") int size){
+		return ResponseEntity.ok(questionService.getAllQuestion(recipeId, page, size));
 	}
 }

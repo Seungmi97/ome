@@ -1,18 +1,24 @@
 package com.ome.service.qna;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.ome.common.enums.MemberState;
 import com.ome.common.enums.PremiumType;
 import com.ome.common.enums.QuestionStatus;
+import com.ome.common.enums.Role;
 import com.ome.domain.Question;
 import com.ome.domain.Recipe;
 import com.ome.domain.Users;
 import com.ome.dto.qna.request.QuestionRequestDto;
+import com.ome.dto.qna.response.QuestionResponseDto;
 import com.ome.repository.qna.QuestionRepository;
 import com.ome.repository.recipe.RecipeRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,6 +28,7 @@ public class QuestionService {
 	private final QuestionRepository questionRepository;
 	private final RecipeRepository recipeRepository;
 
+	@Transactional
 	public String createQuestion(QuestionRequestDto requestDto, Users user) {
 		
 		Recipe recipe = recipeRepository.findById(requestDto.getRecipeId()).orElseThrow(() -> new RuntimeException("존재하지 않는 레시피입니다"));
@@ -40,6 +47,27 @@ public class QuestionService {
 		questionRepository.save(question);
 		
 		return "질문이 등록되었습니다";
+	}
+
+	@Transactional
+	public QuestionResponseDto getQuestion(Long id, Users user) {
+		
+		Question question = questionRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 질문글입니다"));
+		
+		if(question.isSecret() && 
+				!(user == question.getUser() || user == question.getRecipe().getWriter() || user.getRole() == Role.ADMIN)) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
+		return QuestionResponseDto.from(question);
+	}
+
+	@Transactional
+	public Page<QuestionResponseDto> getAllQuestion(Long recipeId, int page, int size) {
+		
+		Pageable pageable = PageRequest.of(page, size);
+		Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RuntimeException("존재하지 않는 레시피입니다"));
+		return questionRepository.findAllByRecipe(recipe, pageable).map(QuestionResponseDto::from);
 	}
 
 }
