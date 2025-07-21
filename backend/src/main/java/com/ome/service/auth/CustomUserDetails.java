@@ -55,15 +55,15 @@ public class CustomUserDetails implements UserDetails {
 		 return true;
 	 }
 	 
-	 public Users getUser() {
+	 public Users getUser() { // 전체 Users 엔티티 반환
 		 return user;
 	 }
 	 
-	 public Role getRole() {
+	 public Role getRole() { // 로그인한 유저의 역할 반환
 		    return user.getRole();
 	 }
 
-	 public Long getId() {
+	 public Long getId() {  // 로그인한 유저 ID 반환
 	    return user.getId();
 	 }
 	

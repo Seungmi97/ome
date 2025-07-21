@@ -33,6 +33,7 @@ import com.ome.dto.recipe.request.RecipeUpdateDto;
 import com.ome.dto.recipe.response.RecipeDetailDto;
 import com.ome.dto.recipe.response.RecipeResponseDto;
 import com.ome.repository.auth.UserRepository;
+import com.ome.repository.bookmark.BookmarkRepository;
 import com.ome.repository.membership.MembershipRepository;
 import com.ome.repository.recipe.MediaRepository;
 import com.ome.repository.recipe.RecipeRepository;
@@ -47,6 +48,7 @@ public class RecipeService {
 	private final UserRepository userRepository;
 	private final MediaRepository mediaRepository;
 	private final MembershipRepository membershipRepository;
+	private final BookmarkRepository bookmarkRepository;
 
 	@Value("${file.upload-dir}")
 	private String uploadDir; // 파일 저장 경로
@@ -142,15 +144,23 @@ public class RecipeService {
 	    List<Media> allMedia = mediaRepository.findByTargetTypeAndTargetIdInOrderBySeqAsc(
 	        TargetType.RECIPE, recipeIds
 	    );
-
 	    // recipeId → List<Media> 매핑
 	    Map<Long, List<Media>> mediaMap = allMedia.stream()
 	        .collect(Collectors.groupingBy(Media::getTargetId));
+	    
+	    // Bookmark count 조회
+	    List<Object[]> bookmarkCounts = bookmarkRepository.countBookmarksByRecipeIds(recipeIds);
+	    Map<Long, Long> bookmarkCountMap = bookmarkCounts.stream()
+	        .collect(Collectors.toMap(
+	            row -> (Long) row[0],
+	            row -> (Long) row[1]
+	        ));
 
 	    // DTO 변환
 	    return recipes.map(recipe -> {
 	        List<Media> mediaList = mediaMap.getOrDefault(recipe.getRecipeId(), List.of());
-	        return RecipeResponseDto.from(recipe, mediaList);
+	        Long bookmarkCount = bookmarkCountMap.getOrDefault(recipe.getRecipeId(), 0L);
+	        return RecipeResponseDto.from(recipe, mediaList, bookmarkCount);
 	    });
 	}
 
@@ -182,7 +192,9 @@ public class RecipeService {
 		List<Media> mediaList = mediaRepository.findByTargetTypeAndTargetIdOrderBySeqAsc(TargetType.RECIPE,
 				recipe.getRecipeId());
 
-		return RecipeDetailDto.from(recipe, mediaList);
+		// 북마크 수 불러오기
+		Long bookmarkCount = bookmarkRepository.countByRecipe(recipe);
+		return RecipeDetailDto.from(recipe, mediaList, bookmarkCount);
 	}
 
 	/**
