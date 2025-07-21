@@ -15,6 +15,7 @@ import com.ome.domain.Recipe;
 import com.ome.domain.Users;
 import com.ome.dto.qna.request.QuestionRequestDto;
 import com.ome.dto.qna.response.QuestionResponseDto;
+import com.ome.repository.auth.UserRepository;
 import com.ome.repository.qna.QuestionRepository;
 import com.ome.repository.recipe.RecipeRepository;
 
@@ -27,6 +28,7 @@ public class QuestionService {
 	
 	private final QuestionRepository questionRepository;
 	private final RecipeRepository recipeRepository;
+	private final UserRepository userRepository;
 
 	@Transactional
 	public String createQuestion(QuestionRequestDto requestDto, Users user) {
@@ -50,12 +52,13 @@ public class QuestionService {
 	}
 
 	@Transactional
-	public QuestionResponseDto getQuestion(Long id, Users user) {
+	public QuestionResponseDto getQuestion(Long id, Long userId) {
 		
 		Question question = questionRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 질문글입니다"));
+		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다"));
 		
 		if(question.isSecret() && 
-				!(user == question.getUser() || user == question.getRecipe().getWriter() || user.getRole() == Role.ADMIN)) {
+				!(userId == question.getUser().getId() || userId == question.getRecipe().getWriter().getId() || user.getRole() == Role.ADMIN)) {
 			throw new AccessDeniedException("권한이 없습니다");
 		}
 		
@@ -68,6 +71,22 @@ public class QuestionService {
 		Pageable pageable = PageRequest.of(page, size);
 		Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RuntimeException("존재하지 않는 레시피입니다"));
 		return questionRepository.findAllByRecipe(recipe, pageable).map(QuestionResponseDto::from);
+	}
+
+	@Transactional
+	public String updateQuestion(Long id, QuestionRequestDto requestDto, Long userId) {
+		
+		Question question = questionRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 질문글입니다"));
+		
+		if(question.getUser().getId() != userId) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
+		question.setTitle(requestDto.getTitle());
+		question.setContent(requestDto.getContent());
+		question.setSecret(requestDto.isSecret());
+		
+		return "질문이 수정되었습니다";
 	}
 
 }

@@ -28,7 +28,7 @@ public class QuestionController {
 	@GetMapping("/{id}")
 	public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id, 
 														   @AuthenticationPrincipal CustomUserDetails user){
-		return ResponseEntity.ok(questionService.getQuestion(id, user.getUser()));
+		return ResponseEntity.ok(questionService.getQuestion(id, user.getId()));
 	}
 	
 	@GetMapping
@@ -36,5 +36,12 @@ public class QuestionController {
 																	@RequestParam(defaultValue = "0") int page,
 																	@RequestParam(defaultValue = "10") int size){
 		return ResponseEntity.ok(questionService.getAllQuestion(recipeId, page, size));
+	}
+	
+	@PatchMapping("/{id}")
+	public ResponseEntity<String> updateQuestion(@PathVariable Long id,
+												 @RequestBody QuestionRequestDto requestDto,
+												 @AuthenticationPrincipal CustomUserDetails user){
+		return ResponseEntity.ok(questionService.updateQuestion(id, requestDto, user.getId()));
 	}
 }
