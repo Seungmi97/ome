@@ -1,5 +1,6 @@
 package com.ome.controller.qna;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,5 +29,12 @@ public class QuestionController {
 	public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id, 
 														   @AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(questionService.getQuestion(id, user.getUser()));
+	}
+	
+	@GetMapping
+	public ResponseEntity<Page<QuestionResponseDto>> getAllQuestion(@RequestParam Long recipeId,
+																	@RequestParam(defaultValue = "0") int page,
+																	@RequestParam(defaultValue = "10") int size){
+		return ResponseEntity.ok(questionService.getAllQuestion(recipeId, page, size));
 	}
 }

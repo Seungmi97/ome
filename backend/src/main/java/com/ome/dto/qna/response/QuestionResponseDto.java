@@ -19,7 +19,7 @@ public class QuestionResponseDto {
 	private String status;
 	private Answer answer;
 	
-	public static QuestionResponseDto from(Question question, Answer answer) {
+	public static QuestionResponseDto from(Question question) {
 		QuestionResponseDto dto = new QuestionResponseDto();
 		dto.setId(question.getQuestionId());
 		dto.setTitle(question.getTitle());
@@ -28,7 +28,7 @@ public class QuestionResponseDto {
 		dto.setCreatedAt(question.getCreatedAt());
 		dto.setAuthor(question.getUser().getUsername());
 		dto.setStatus(question.getStatus().toString());
-		dto.setAnswer(answer);
+		dto.setAnswer(question.getAnswer());
 		
 		return dto;
 	}

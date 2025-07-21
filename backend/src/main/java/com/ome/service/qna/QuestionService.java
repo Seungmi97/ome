@@ -1,5 +1,8 @@
 package com.ome.service.qna;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -7,13 +10,11 @@ import com.ome.common.enums.MemberState;
 import com.ome.common.enums.PremiumType;
 import com.ome.common.enums.QuestionStatus;
 import com.ome.common.enums.Role;
-import com.ome.domain.Answer;
 import com.ome.domain.Question;
 import com.ome.domain.Recipe;
 import com.ome.domain.Users;
 import com.ome.dto.qna.request.QuestionRequestDto;
 import com.ome.dto.qna.response.QuestionResponseDto;
-import com.ome.repository.qna.AnswerRepository;
 import com.ome.repository.qna.QuestionRepository;
 import com.ome.repository.recipe.RecipeRepository;
 
@@ -26,7 +27,6 @@ public class QuestionService {
 	
 	private final QuestionRepository questionRepository;
 	private final RecipeRepository recipeRepository;
-	private final AnswerRepository answerRepository;
 
 	@Transactional
 	public String createQuestion(QuestionRequestDto requestDto, Users user) {
@@ -59,9 +59,15 @@ public class QuestionService {
 			throw new AccessDeniedException("권한이 없습니다");
 		}
 		
-		Answer answer = answerRepository.findByQuestion(question).orElse(null);
+		return QuestionResponseDto.from(question);
+	}
+
+	@Transactional
+	public Page<QuestionResponseDto> getAllQuestion(Long recipeId, int page, int size) {
 		
-		return QuestionResponseDto.from(question, answer);
+		Pageable pageable = PageRequest.of(page, size);
+		Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RuntimeException("존재하지 않는 레시피입니다"));
+		return questionRepository.findAllByRecipe(recipe, pageable).map(QuestionResponseDto::from);
 	}
 
 }
