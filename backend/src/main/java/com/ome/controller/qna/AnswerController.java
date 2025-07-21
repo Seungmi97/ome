@@ -30,4 +30,10 @@ public class AnswerController {
 											   @AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(answerService.updateAnswer(id, requestDto, user.getId()));
 	}
+	
+	@DeleteMapping("/answers/{id}")
+	public ResponseEntity<String> deleteAnswer(@PathVariable Long id,
+											   @AuthenticationPrincipal CustomUserDetails user){
+		return ResponseEntity.ok(answerService.deleteAnswer(id, user.getId()));
+	}
 }
