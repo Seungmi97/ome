@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import UserTable from '@/components/UserTable'; // 유저 테이블 컴포넌트
 
 export default function UserManage() {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState([]);
-  const [creators, setCreators] = useState([]);
   const [page, setPage] = useState(0);
   const [size] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     fetchUsers();
-    fetchCreators();
   }, [search, page]);
 
   const fetchUsers = async () => {
@@ -31,21 +30,6 @@ export default function UserManage() {
     }
   };
 
-  const fetchCreators = async () => {
-    try {
-      const res = await axios.get('/api/admin/creators/all', {
-        params: { keyword: search, page, size },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      });
-      setCreators(res.data.content || []);
-    } catch (err) {
-      console.error('작가 불러오기 실패', err);
-      setCreators([]);
-    }
-  };
-
   const handleDelete = async (userId) => {
     if (!window.confirm('정말로 강제 탈퇴시키겠습니까?')) return;
     try {
@@ -56,7 +40,6 @@ export default function UserManage() {
       });
       alert('회원 강제 탈퇴 완료');
       fetchUsers();
-      fetchCreators();
     } catch (err) {
       alert('강제 탈퇴 실패');
       console.error(err);
@@ -67,7 +50,6 @@ export default function UserManage() {
     <div>
       <h2 className="text-2xl font-bold mb-6">유저 관리</h2>
 
-      {/* 검색 */}
       <div className="mb-4 flex justify-between">
         <input
           type="text"
@@ -81,19 +63,13 @@ export default function UserManage() {
         />
       </div>
 
-      {/* 일반 유저 테이블 */}
+      {/* 전체 유저 테이블 */}
       <div className="bg-white shadow rounded mb-10">
-        <h3 className="text-xl font-semibold p-4 border-b">👤 일반 유저</h3>
+        <h3 className="text-xl font-semibold p-4 border-b">전체 유저</h3>
         <UserTable users={users} handleDelete={handleDelete} />
       </div>
 
-      {/* 작가 유저 테이블 */}
-      <div className="bg-white shadow rounded">
-        <h3 className="text-xl font-semibold p-4 border-b">🎨 작가 유저</h3>
-        <UserTable users={creators} handleDelete={handleDelete} />
-      </div>
-
-      {/* 페이지네이션 (공통) */}
+      {/* 페이지네이션 */}
       <div className="flex justify-center mt-4 space-x-2">
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
