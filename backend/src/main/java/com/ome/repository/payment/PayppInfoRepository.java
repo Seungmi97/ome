@@ -10,4 +10,5 @@ import com.ome.domain.Users;
 public interface PayppInfoRepository extends JpaRepository<PayppInfo, Long> {
     Optional<PayppInfo> findByCustomerUid(String customerUid);
     Optional<PayppInfo> findByUser(Users user);
+    Optional<PayppInfo> findByUserId(Long userId);
 }

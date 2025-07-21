@@ -46,6 +46,8 @@ public class PaymentService {
     private final PayppInfoRepository payppInfoRepository;
     private final MembershipRepository membershipRepository;
     private IamportClient iamportClient;
+    
+    
 
     @Value("${portone.api_key}")
     private String apiKey;
@@ -193,26 +195,119 @@ public void requestRecurringPayment(String customerUid, Long userId) {
         throw new RuntimeException("정기결제 요청 중 오류가 발생했습니다.", e);
     }
 }
-@Scheduled(cron = "0 0 1 * * ?") // 매일 새벽 1시 실행
+@Scheduled(cron = "0 0 1 * * ?") // 매일 새벽 1시
 @Transactional
-public void scheduleNextRecurringPayments() {
+public void handleRecurringMemberships() {
     LocalDateTime now = LocalDateTime.now();
-    LocalDateTime threshold = now.plusDays(1); // 하루 내 만료자
-
+    LocalDateTime threshold = now.plusDays(1); // 하루 내 만료 대상
     List<Membership> expiringList = membershipRepository.findExpiringSoon(threshold);
 
     for (Membership membership : expiringList) {
         Long userId = membership.getUser().getId();
-        String customerUid = "user_" + userId;
 
+        // 1. customerUid 조회
+        String customerUid = payppInfoRepository.findByUserId(userId)
+                .map(PayppInfo::getCustomerUid)
+                .orElse(null);
+
+        if (customerUid == null) {
+            log.warn("❗️userId={} 는 카드 등록이 되어 있지 않아 정기결제 예약 불가", userId);
+            continue;
+        }
+
+        // 2. merchantUid, scheduleAt 설정
+        String merchantUid = "auto_" + UUID.randomUUID();
+        Date scheduleAt = Date.from(LocalDateTime.now().plusDays(1)
+                .withHour(2).withMinute(0).withSecond(0) // 다음날 오전 2시에 결제되도록
+                .toInstant(ZoneOffset.UTC));
+
+        // 3. 스케줄 등록 요청
         try {
-            requestRecurringPayment(customerUid, userId);
-            log.info("다음 정기결제 예약 완료 - userId: {}", userId);
+            ScheduleEntry entry = new ScheduleEntry(merchantUid, scheduleAt, PREMIUM_PRICE);
+            entry.setName("프리미엄 멤버십 자동결제");
+
+            ScheduleData scheduleData = new ScheduleData(customerUid);
+            scheduleData.addSchedule(entry);
+
+            IamportResponse<List<Schedule>> response = iamportClient.subscribeSchedule(scheduleData);
+            log.info("✅ userId={} 정기결제 예약 등록 완료: {}", userId, response.getResponse());
         } catch (Exception e) {
-            log.error("정기결제 예약 실패 - userId: {}", userId, e);
+            log.error("❌ userId={} 정기결제 예약 실패", userId, e);
         }
     }
 }
+@Scheduled(cron = "0 30 2 * * ?") // 매일 오전 2시 30분에 실행
+@Transactional
+public void processRecurringPaymentResults() {
+    LocalDateTime checkStart = LocalDateTime.now().minusDays(1).withHour(2).withMinute(0).withSecond(0).withNano(0); // 어제 2시
+    LocalDateTime checkEnd = checkStart.plusMinutes(30); // 오늘 2시 30분까지
+
+    List<Membership> candidates = membershipRepository.findExpiringSoon(checkStart); // 스케줄 등록 대상과 동일한 기준
+
+    for (Membership membership : candidates) {
+        Long userId = membership.getUser().getId();
+        String merchantUidPrefix = "auto_"; // 예약 시 사용한 접두사
+
+        // 오늘 2시 ~ 2시30분 사이 예약된 merchantUid 패턴으로 결제 확인
+        try {
+            List<Payment> payments = paymentRepository.findByUserIdAndCreatedAtBetween(userId, checkStart, checkEnd);
+            boolean paid = false;
+
+            for (Payment payment : payments) {
+                if (payment.getMerchantUid() != null && payment.getMerchantUid().startsWith(merchantUidPrefix)
+                    && "paid".equals(payment.getStatus())) {
+
+                    // 이미 처리된 결제면 skip
+                    if (paymentRepository.findByPgTid(payment.getPgTid()).isPresent()) continue;
+
+                    membershipService.extendPremiumMembership(userId); // 프리미엄 연장
+                    log.info("💳 userId={} 자동결제 확인 및 프리미엄 연장 완료", userId);
+                    paid = true;
+                    break;
+                }
+            }
+
+            if (!paid) {
+                log.warn("❗️userId={} 자동결제 실패 혹은 미진행, 무료 멤버십으로 전환", userId);
+                membershipService.cancelMembership(userId); // 실패 시 downgrade
+            }
+
+        } catch (Exception e) {
+            log.error("❌ userId={} 결제 결과 처리 중 오류", userId, e);
+        }
+    }
+}
+// @Transactional
+// public void checkScheduledPaymentResults() {
+//     LocalDateTime now = LocalDateTime.now();
+//     LocalDateTime from = now.minusHours(3); // 최근 3시간 내 결제
+//     LocalDateTime to = now;
+
+//     List<Users> users = userRepository.findAll(); // 또는 필요한 조건 필터링
+
+//     for (Users user : users) {
+//         Long userId = user.getId();
+
+//         List<Payment> payments = paymentRepository
+//                 .findByUserIdAndCreatedAtBetween(userId, from, to);
+
+//         if (payments.isEmpty()) {
+//             log.warn("⛔️ userId={} 결제 기록 없음 → 무료로 전환", userId);
+//             membershipService.cancelMembership(userId);
+//         } else {
+//             for (Payment p : payments) {
+//                 if ("paid".equals(p.getStatus())) {
+//                     log.info("✅ userId={} 결제 성공 → 프리미엄 연장", userId);
+//                     membershipService.extendPremiumMembership(userId);
+//                 } else {
+//                     log.warn("❌ userId={} 결제 실패(status={}) → 무료로 전환", userId, p.getStatus());
+//                     membershipService.cancelMembership(userId);
+//                 }
+//             }
+//         }
+//     }
+// }
+
 
 
 }

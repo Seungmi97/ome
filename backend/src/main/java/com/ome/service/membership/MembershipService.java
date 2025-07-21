@@ -75,4 +75,21 @@ public class MembershipService {
 
         membershipRepository.save(membership);
     }
+    @Transactional
+public void extendPremiumMembership(Long userId) {
+    Membership membership = membershipRepository.findByUserId(userId)
+            .orElseThrow(() -> new IllegalArgumentException("멤버십 정보 없음"));
+
+    // 현재 만료일 기준 30일 연장 (과거일 경우 오늘부터)
+    LocalDateTime baseDate = membership.getExpiredAt() != null && membership.getExpiredAt().isAfter(LocalDateTime.now())
+            ? membership.getExpiredAt()
+            : LocalDateTime.now();
+
+    membership.setMemberState(MemberState.premium);
+    membership.setUpdatedAt(LocalDateTime.now());
+    membership.setExpiredAt(baseDate.plusDays(30));
+
+    membershipRepository.save(membership);
+}
+
 }
