@@ -3,8 +3,6 @@ package com.ome.domain;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-
 import com.ome.common.enums.QuestionStatus;
 
 import jakarta.persistence.*;
@@ -44,4 +42,13 @@ public class Question {
 	
 	@CreationTimestamp
 	private LocalDateTime createdAt;
+	
+	@OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private Answer answer;
+	
+	public void setAnswer(Answer answer) {
+        this.answer = answer;
+        answer.setQuestion(this); // 양방향 연관관계 편의 메서드
+    }
+
 }

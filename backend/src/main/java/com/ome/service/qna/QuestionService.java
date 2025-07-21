@@ -6,13 +6,18 @@ import org.springframework.stereotype.Service;
 import com.ome.common.enums.MemberState;
 import com.ome.common.enums.PremiumType;
 import com.ome.common.enums.QuestionStatus;
+import com.ome.common.enums.Role;
+import com.ome.domain.Answer;
 import com.ome.domain.Question;
 import com.ome.domain.Recipe;
 import com.ome.domain.Users;
 import com.ome.dto.qna.request.QuestionRequestDto;
+import com.ome.dto.qna.response.QuestionResponseDto;
+import com.ome.repository.qna.AnswerRepository;
 import com.ome.repository.qna.QuestionRepository;
 import com.ome.repository.recipe.RecipeRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,7 +26,9 @@ public class QuestionService {
 	
 	private final QuestionRepository questionRepository;
 	private final RecipeRepository recipeRepository;
+	private final AnswerRepository answerRepository;
 
+	@Transactional
 	public String createQuestion(QuestionRequestDto requestDto, Users user) {
 		
 		Recipe recipe = recipeRepository.findById(requestDto.getRecipeId()).orElseThrow(() -> new RuntimeException("존재하지 않는 레시피입니다"));
@@ -40,6 +47,21 @@ public class QuestionService {
 		questionRepository.save(question);
 		
 		return "질문이 등록되었습니다";
+	}
+
+	@Transactional
+	public QuestionResponseDto getQuestion(Long id, Users user) {
+		
+		Question question = questionRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 질문글입니다"));
+		
+		if(question.isSecret() && 
+				!(user == question.getUser() || user == question.getRecipe().getWriter() || user.getRole() == Role.ADMIN)) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
+		Answer answer = answerRepository.findByQuestion(question).orElse(null);
+		
+		return QuestionResponseDto.from(question, answer);
 	}
 
 }
