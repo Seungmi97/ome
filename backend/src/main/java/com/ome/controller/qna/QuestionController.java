@@ -44,4 +44,10 @@ public class QuestionController {
 												 @AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(questionService.updateQuestion(id, requestDto, user.getId()));
 	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteQuestion(@PathVariable Long id,
+												 @AuthenticationPrincipal CustomUserDetails user){
+		return ResponseEntity.ok(questionService.deleteQuestion(id, user.getId()));
+	}
 }

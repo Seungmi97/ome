@@ -89,4 +89,18 @@ public class QuestionService {
 		return "질문이 수정되었습니다";
 	}
 
+	public String deleteQuestion(Long id, Long userId) {
+		
+		Question question = questionRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 질문글입니다"));
+		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다"));
+		
+		if(question.getUser().getId() != userId && user.getRole() != Role.ADMIN) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
+		questionRepository.delete(question);
+		
+		return "질문이 삭제되었습니다";
+	}
+
 }
