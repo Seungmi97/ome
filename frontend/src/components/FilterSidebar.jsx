@@ -22,9 +22,15 @@ const FilterSidebar = ({ keywords = [], onRemoveKeyword, onReset }) => {
         {isAuthenticated && (role === 'USER' || role === 'CREATOR') && (
           <SidebarItem icon={<Folder size={18} />} label="멤버십 관리" />
         )}
+
         {isAuthenticated && (role === 'USER' || role === 'CREATOR') && (
           <SidebarItem icon={<Folder size={18} />} label="마이페이지 " />
         )}
+
+        {isAuthenticated && role === 'ADMIN' && (
+          <SidebarItem icon={<Folder size={18} />} label="관리자 페이지" onClick={() => navigate('/admin/dashboard')} />
+        )}
+
         {role === 'CREATOR' && (
           <SidebarItem
             icon={<Settings size={18} />}
