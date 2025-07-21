@@ -22,43 +22,39 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173") 
 @RequiredArgsConstructor
 public class UserController {
-	
+
 	private final UserService userService;
 	private final JwtUtil jwtUtil;
-	
-	
-	//  🔴 사용자 정보 조회하기 
+
+	// 🔴 사용자 정보 조회하기
 	@GetMapping("/users/me")
 	public UserInfoResponseDto getUserInfo(@AuthenticationPrincipal CustomUserDetails user) {
-		
+
 		return userService.getUserInfo(user.getUser().getUserId());
 	}
-	
-	// 🔴 사용자 정보 수정하기 
+
+	// 🔴 사용자 정보 수정하기
 	@PutMapping("/users/me")
 	public void updateUserInfo(@AuthenticationPrincipal CustomUserDetails user, @RequestBody UserUpdateRequestDto dto) {
-		
+
 		userService.updateUser(user.getUser().getUserId(), dto);
 	}
-	
-	
-	// 🔴 마이페이지 정보 조회하기 
+
+	// 🔴 마이페이지 정보 조회하기
 	@GetMapping("/mypage")
 	public Object getMyPage(@AuthenticationPrincipal CustomUserDetails user) {
-		
+
 		return userService.getMyPage(user.getUser().getUserId());
-		
-	}
-	
-	//🔴 회원 탈퇴 
-	@DeleteMapping("/users")
-	public void deleteUser(@AuthenticationPrincipal CustomUserDetails user) {
-		
-		userService.deleteUser(user.getUser().getUserId());
+
 	}
 
+	// 🔴 회원 탈퇴
+	@DeleteMapping("/users")
+	public void deleteUser(@AuthenticationPrincipal CustomUserDetails user) {
+
+		userService.deleteUser(user.getUser().getUserId());
+	}
 
 }
