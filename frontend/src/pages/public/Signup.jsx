@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signup, login } from '@/services/authAPI';
+import { signup, login, checkUserIdDuplicate } from '@/services/authAPI';
 import { useAuth } from '@/hooks/useAuth';
 import logo from '@/assets/ome-logo.svg';
 import ProgressButton from '@/components/ProgressButton';
@@ -8,6 +8,8 @@ import ProgressButton from '@/components/ProgressButton';
 export default function Signup() {
   const navigate = useNavigate();
   const { login: doLogin } = useAuth();
+  const [isIdChecked, setIsIdChecked] = useState(false);
+  const [isIdAvailable, setIsIdAvailable] = useState(null);
 
   const [form, setForm] = useState({
     user_id: '',
@@ -67,6 +69,28 @@ export default function Signup() {
     }
   };
 
+  const handleCheckUserId = async () => {
+    if (!form.user_id.trim()) return;
+
+    try {
+      await checkUserIdDuplicate(form.user_id);
+      setIsIdAvailable(true);    // 사용 가능
+      setIsIdChecked(true);
+    } catch (err) {
+      const msg = err?.response?.data;
+      console.error('[ID중복확인] 실패:', msg);
+
+      // 백엔드가 "이미 사용 중인 아이디입니다."라고 줄 경우만 중복으로 간주
+      if (msg?.includes('이미 사용')) {
+        setIsIdAvailable(false);
+        setIsIdChecked(true);
+      } else {
+        // 기타 에러: 네트워크 등
+        alert('아이디 중복 확인 중 오류 발생');
+      }
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-sm p-8 bg-white rounded-lg shadow">
@@ -77,10 +101,51 @@ export default function Signup() {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <Input label="ID" name="user_id" value={form.user_id} onChange={handleChange} />
+          <div className="relative">
+            <label className="block mb-1 text-sm font-medium text-gray-700">ID</label>
+            <div className="flex">
+              <input
+                name="user_id"
+                value={form.user_id}
+                onChange={(e) => {
+                  handleChange(e);
+                  setIsIdChecked(false);
+                  setIsIdAvailable(null);
+                }}
+                placeholder="아이디를 입력하세요."
+                className={`flex-1 px-4 py-2 rounded-l-md border focus:outline-none
+        ${isIdAvailable === true ? 'border-green-500 ring-2 ring-green-200' : ''}
+        ${isIdAvailable === false ? 'border-red-500 ring-2 ring-red-200' : 'border-gray-300 focus:ring-green-300'}
+      `}
+              />
+              <button
+                type="button"
+                onClick={handleCheckUserId}
+                className="px-3 py-2 text-sm font-medium bg-gray-100 border border-l-0 border-gray-300 rounded-r-md hover:bg-gray-200"
+              >
+                중복확인
+              </button>
+            </div>
+
+            {/* 체크 or 엑스 아이콘 */}
+            {isIdChecked && (
+              <span className={`absolute right-12 top-9 text-xl font-bold ${isIdAvailable ? 'text-green-500' : 'text-red-500'
+                }`}>
+                {isIdAvailable ? '✔' : '✘'}
+              </span>
+            )}
+
+            {/* 상태 메시지 */}
+            {isIdChecked && isIdAvailable === false && (
+              <p className="mt-1 text-sm text-red-500">이미 사용 중인 아이디입니다.</p>
+            )}
+            {isIdChecked && isIdAvailable === true && (
+              <p className="mt-1 text-sm text-green-500">사용 가능한 아이디입니다.</p>
+            )}
+          </div>
           <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} />
           <Input label="Password Confirm" name="passwordConfirm" type="password" value={form.passwordConfirm} onChange={handleChange} />
-          
+
           <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} />
           <Input label="Username" name="username" value={form.username} onChange={handleChange} />
           <div>

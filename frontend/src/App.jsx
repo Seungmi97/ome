@@ -18,6 +18,8 @@ import CreatorDashboardRecipeViewContent from "@/pages/creator/CreatorDashboardR
 import CreatorDashboardLayout from "@/layouts/CreatorDashboardLayout";
 import CreatorDashboardUserViewContent from "@/pages/creator/CreatorDashboardUserViewContent";
 import CreatorDashboardSummaryContent from "@/pages/creator/CreatorDashboardSummaryContent";
+import CommentManage from "@/pages/admin/CommentManage";
+import QnAManage from "@/pages/admin/QnAManage";
 
 export default function App() {
   return (
