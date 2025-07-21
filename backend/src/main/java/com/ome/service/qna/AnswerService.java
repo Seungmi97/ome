@@ -8,6 +8,7 @@ import com.ome.domain.Question;
 import com.ome.domain.Users;
 import com.ome.dto.qna.request.AnswerRequestDto;
 import com.ome.repository.auth.UserRepository;
+import com.ome.repository.qna.AnswerRepository;
 import com.ome.repository.qna.QuestionRepository;
 
 import jakarta.transaction.Transactional;
@@ -19,6 +20,7 @@ public class AnswerService {
 	
 	private final QuestionRepository questionRepository;
 	private final UserRepository userRepository;
+	private final AnswerRepository answerRepository;
 	
 	@Transactional
 	public String createAnswer(Long questionId, AnswerRequestDto requestDto, Long userId) {
@@ -39,6 +41,20 @@ public class AnswerService {
 		questionRepository.save(question);
 		
 		return "답변이 등록되었습니다";
+	}
+
+	@Transactional
+	public String updateAnswer(Long id, AnswerRequestDto requestDto, Long userId) {
+		
+		Answer answer = answerRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 답변입니다"));
+		
+		if(answer.getCreator().getId() != userId) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
+		answer.setContent(requestDto.getContent());
+		
+		return "답변이 수정되었습니다";
 	}
  
 }
