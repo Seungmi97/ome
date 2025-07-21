@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import com.ome.common.enums.Category;
 import com.ome.common.enums.PremiumType;
 import com.ome.domain.Recipe;
-import com.ome.domain.Users;
+
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {

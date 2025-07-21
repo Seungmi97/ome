@@ -1,8 +1,6 @@
 package com.ome.controller.auth;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,10 +12,7 @@ import com.ome.dto.auth.request.UserUpdateRequestDto;
 import com.ome.dto.auth.response.UserInfoResponseDto;
 import com.ome.service.auth.CustomUserDetails;
 import com.ome.service.auth.UserService;
-import com.ome.util.JwtUtil;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController

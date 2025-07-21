@@ -15,8 +15,8 @@ import com.ome.dto.comment.response.CommentResponseDto;
 import com.ome.exception.NotFoundException;
 import com.ome.repository.auth.UserRepository;
 import com.ome.repository.comment.CommentRepository;
-import com.ome.repository.membership.MembershipRepository;
-import com.ome.repository.recipe.MediaRepository;
+//import com.ome.repository.membership.MembershipRepository;
+//import com.ome.repository.recipe.MediaRepository;
 import com.ome.repository.recipe.RecipeRepository;
 
 import jakarta.transaction.Transactional;
@@ -28,7 +28,7 @@ public class CommentService {
 	
 	private final RecipeRepository recipeRepository;
 	private final UserRepository userRepository;
-	private final MembershipRepository membershipRepository;
+	//private final MembershipRepository membershipRepository;
 	private final CommentRepository commentRepository;
 	
 	

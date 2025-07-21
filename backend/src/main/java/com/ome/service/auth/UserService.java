@@ -16,7 +16,7 @@ import com.ome.repository.auth.UserRepository;
 import com.ome.repository.bookmark.BookmarkRepository;
 import com.ome.repository.recipe.RecipeRepository;
 
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 
 // 🌟🌟 마이페이지 , 사용자 정보 조회 / 수정, 탈퇴 등 동작 구현

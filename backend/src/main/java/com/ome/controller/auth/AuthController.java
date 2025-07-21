@@ -3,7 +3,6 @@ package com.ome.controller.auth;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +18,6 @@ import com.ome.repository.auth.UserRepository;
 import com.ome.service.auth.AuthService;
 import com.ome.service.auth.CustomUserDetails;
 import com.ome.service.auth.FileUploadService;
-import com.ome.util.JwtUtil;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +31,6 @@ public class AuthController {
 	private final AuthService authService;
 	private final UserRepository userRepository;
 	private final FileUploadService fileUploadService;
-	private final JwtUtil jwtUtil;
 
 	// 🔴 프로필 이미지 업로드 api
 	@PostMapping("/upload-profile")
