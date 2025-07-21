@@ -1,6 +1,6 @@
 package com.ome.controller.auth;
 
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +14,8 @@ import com.ome.dto.auth.request.UserUpdateRequestDto;
 import com.ome.dto.auth.response.UserInfoResponseDto;
 import com.ome.service.auth.CustomUserDetails;
 import com.ome.service.auth.UserService;
-import com.ome.util.JwtUtil;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,8 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	
 	private final UserService userService;
-	private final JwtUtil jwtUtil;
-	
+
 	
 	//  🔴 사용자 정보 조회하기 
 	@GetMapping("/users/me")

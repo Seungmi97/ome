@@ -1,5 +1,6 @@
 package com.ome.controller.auth;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +19,7 @@ import com.ome.repository.auth.UserRepository;
 import com.ome.service.auth.AuthService;
 import com.ome.service.auth.CustomUserDetails;
 import com.ome.service.auth.FileUploadService;
-import com.ome.util.JwtUtil;
+
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class AuthController {
 	private final AuthService authService;
 	private final UserRepository userRepository;
 	private final FileUploadService fileUploadService;
-	private final JwtUtil jwtUtil;
+	
 	
 	
 	// 🔴 프로필 이미지 업로드 api 
@@ -55,9 +56,37 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDto request,HttpServletResponse response) {
 		String token  = authService.login(request);
-		// JWT 토큰을 헤더에 담아 응답하기 
-		response.setHeader("Authorization", "Bearer " + token);
+		// ✅ 쿠키 설정
+		ResponseCookie cookie = ResponseCookie.from("jwt", token)
+			.httpOnly(true)
+			.secure(true) 
+			.path("/")
+			.sameSite("None") // 크로스 도메인일 경우 반드시 필요
+			.maxAge(60 * 60 * 24) // 1일
+			.build();
+
+		// ✅ Set-Cookie 헤더 추가
+		response.addHeader("Set-Cookie", cookie.toString());	
 		return ResponseEntity.ok(new LoginResponseDto("로그인 성공",token));
+	}
+	
+	// 🔴 아이디 찾기 -> email 파람 값으로 받아 id 찾기
+	@GetMapping("/find-id")
+	public ResponseEntity<?> findByUserId(@RequestParam String email) {
+		return authService.findUserIdByEmail(email)
+				.map(userId -> ResponseEntity.ok().body("회원님의 아이디는 : "+ userId +" 입니다."))
+				.orElse(ResponseEntity.badRequest().body("해당 이메일로 가입된 아이디가 없습니다."));
+	}
+	
+	// 🔴 비밀번호 초기화 -> 이메일과 아이디를 인증하고나서 임시 비밀번호 발급하기 
+	@PostMapping("/reset-password")
+	public ResponseEntity<?> resetPassword(@RequestParam String userId , @RequestParam String  email) {
+		try {
+			String newPassword = authService.resetPassword(userId, email);
+			return ResponseEntity.ok("임시 비밀번호가 발급되었습니다 : " +newPassword);
+		}catch(IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 	
 	// 🔴 로그아웃 

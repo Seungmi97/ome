@@ -1,6 +1,6 @@
 package com.ome.controller.admin;
 
-import java.util.List;
+
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.ome.MyOmePlatformApplication;
 import com.ome.dto.admin.request.UserDto;
 import com.ome.service.admin.AdminService;
 import com.ome.service.auth.CustomUserDetails;
-import com.ome.util.JwtUtil;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,8 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminUserController {
 
-    private final MyOmePlatformApplication myOmePlatformApplication;
-	
+
 	private final AdminService adminService;
  
 	

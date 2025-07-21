@@ -1,7 +1,6 @@
 package com.ome.dto.auth.request;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 // 🌟🌟 UserService에서 내 정보 수정할 때 사용함
 @Getter
 public class UserUpdateRequestDto {
