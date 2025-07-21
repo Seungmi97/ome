@@ -1,5 +1,6 @@
 package com.ome.controller.auth;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ome.dto.auth.request.UserUpdateRequestDto;
 import com.ome.dto.auth.response.UserInfoResponseDto;
+import com.ome.service.auth.CustomUserDetails;
 import com.ome.service.auth.UserService;
 import com.ome.util.JwtUtil;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173") // 🌟🌟🌟 일단 임시 기본 리액트 포트로 지정함 (나중에 맞추기!!)
+@CrossOrigin(origins = "http://localhost:5173") 
 @RequiredArgsConstructor
 public class UserController {
 	
@@ -28,40 +29,32 @@ public class UserController {
 	
 	//  🔴 사용자 정보 조회하기 
 	@GetMapping("/users/me")
-	public UserInfoResponseDto getUserInfo(HttpServletRequest request) {
-		String token = jwtUtil.resolveToken(request);
-		String userId = jwtUtil.getUserId(token);
+	public UserInfoResponseDto getUserInfo(@AuthenticationPrincipal CustomUserDetails user) {
 		
-		return userService.getUserInfo(userId);
+		return userService.getUserInfo(user.getUser().getUserId());
 	}
 	
 	// 🔴 사용자 정보 수정하기 
 	@PutMapping("/users/me")
-	public void updateUserInfo(HttpServletRequest reuqest, @RequestBody UserUpdateRequestDto dto) {
-		String token = jwtUtil.resolveToken(reuqest);
-		String userId = jwtUtil.getUserId(token);
+	public void updateUserInfo(@AuthenticationPrincipal CustomUserDetails user, @RequestBody UserUpdateRequestDto dto) {
 		
-		userService.updateUser(userId, dto);
+		userService.updateUser(user.getUser().getUserId(), dto);
 	}
 	
 	
 	// 🔴 마이페이지 정보 조회하기 
 	@GetMapping("/mypage")
-	public Object getMyPage(HttpServletRequest reuqest) {
-		String token = jwtUtil.resolveToken(reuqest);
-		String userId = jwtUtil.getUserId(token);
-	
-		return userService.getMyPage(userId);
+	public Object getMyPage(@AuthenticationPrincipal CustomUserDetails user) {
+		
+		return userService.getMyPage(user.getUser().getUserId());
 		
 	}
 	
 	//🔴 회원 탈퇴 
 	@DeleteMapping("/users")
-	public void deleteUser(HttpServletRequest request) {
-		String token = jwtUtil.resolveToken(request);
-		String userId = jwtUtil.getUserId(token);
+	public void deleteUser(@AuthenticationPrincipal CustomUserDetails user) {
 		
-		userService.deleteUser(userId);
+		userService.deleteUser(user.getUser().getUserId());
 	}
 
 

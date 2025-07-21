@@ -36,12 +36,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		return null;
 	}
+	
+	// 쿠키에서 jwt 토큰을 꺼내기
+	private String extractTokenFromCookies(HttpServletRequest request) {
+		if (request.getCookies() != null) {
+			for (var cookie : request.getCookies()) {
+				if ("jwt".equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
+	}
 
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response , FilterChain filterChain) throws ServletException, IOException{
 		try {
 			String token = resolveToken(request);
+			
+			if (token == null) {
+				token = extractTokenFromCookies(request);
+			}
 			
 			if(token != null && jwtUtil.validateToken(token)) {
 				String userId = jwtUtil.getUserId(token);
