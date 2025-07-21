@@ -15,10 +15,32 @@ export const login = (payload) => api.post('/auth/login', payload);
 export const signup = (payload) => api.post('/auth/signup', payload);
 
 /**
+ * 사용자 ID 중복 확인
+ * @param {string} userId
+ * @returns {Promise<string>}
+ */
+export const checkUserIdDuplicate = (userId) =>
+  api.get('/users/check-id', { params: { userId } });
+
+/**
  * accessToken 갱신 (refreshToken은 쿠키에 있음)
  * @returns {Promise<{ accessToken: string }>}
  */
 export const refresh = () => api.post('/auth/refresh');
+
+/**
+ * 프로필 이미지 업로드
+ * @param {File} file
+ * @returns {Promise<string>} 업로드된 이미지 URL
+ */
+export const uploadProfileImage = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return api.post('/users/upload-profile', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
 
 /**
  * 로그아웃 요청

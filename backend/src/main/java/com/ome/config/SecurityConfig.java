@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.ome.exception.handler.JwtAccessDeniedHandler;
 import com.ome.exception.handler.JwtAuthenticationEntryPoint;
 import com.ome.filter.JwtAuthenticationFilter;
-import com.ome.service.auth.CustomUserDetailsService;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,8 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final JwtAuthenticationFilter filter;
-	private final CustomUserDetailsService customUserDetailService;
-
+	
 	// 보안 관련 설정하기
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,7 +46,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/admin/**").hasRole("ADMIN") // 관리자 권한을 가진 사용자에게만 접근 가능
 						.requestMatchers("/creator/**").hasRole("CREATOR") // 작가 권한을 가진 사용자에게만 접근 가능
 						.requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/check-id",
-								"/api/auth/check-email", "/api/recipes/**", "/api/auth/upload-profile")
+								"/api/auth/check-email", "/api/recipes/**", "/api/auth/upload-profile","/api/auth/find-id","/api/auth/reset-password")
 						.permitAll()
 						.requestMatchers("/api/**", "/api/recipes/**", "/api/auth/logout").authenticated()
 						

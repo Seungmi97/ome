@@ -4,7 +4,7 @@ package com.ome.dto.auth.request;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ome.common.enums.Role;
+
 
 import lombok.Getter;
 

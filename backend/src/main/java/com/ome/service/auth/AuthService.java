@@ -1,8 +1,9 @@
 
 package com.ome.service.auth;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.header.CacheControlServerHttpHeadersWriter;
 import org.springframework.stereotype.Service;
 
 import com.ome.domain.Users;
@@ -106,6 +107,39 @@ public class AuthService {
 		// 토큰 생성하기
 		return jwtUtil.createToken(user.getUserId(), user.getRole().name());
 		
+	}
+	
+	// 🔴 아이디 찾기 
+	public Optional<String> findUserIdByEmail(String email) {
+		return repository.findByEmail(email).map(Users::getUserId);
+	}
+	
+	// 🔴 비밀번호 초기화 (임시 비밀번호 발급)
+	public String resetPassword(String userId , String email) {
+		Users user = repository.findByUserId(userId).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+		if(!user.getEmail().equals(email)) {
+			throw new IllegalArgumentException("아이디와 이메일 정보가 일치하지 않습니다.");
+		}
+		
+		// 임시 비밀번호 생성 ( 6자리 문자열 )
+		String randomPassword = generateRandomPassword(8);
+		String encodedPassword = passwordEncoder.encode(randomPassword);
+		
+		user.setPassword(encodedPassword);
+		repository.save(user);
+		
+		return randomPassword;
+	}
+	
+	// 🔴 비밀번호 랜덤 생성하는 메소드 
+	private String generateRandomPassword(int length) {
+		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < length; i++) {
+			int idx = (int) (Math.random() * chars.length());
+			sb.append(chars.charAt(idx));
+		}
+		return sb.toString();
 	}
 	
 	
