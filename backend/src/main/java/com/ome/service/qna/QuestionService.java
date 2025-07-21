@@ -89,6 +89,7 @@ public class QuestionService {
 		return "질문이 수정되었습니다";
 	}
 
+	@Transactional
 	public String deleteQuestion(Long id, Long userId) {
 		
 		Question question = questionRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 질문글입니다"));
