@@ -12,6 +12,7 @@ import com.ome.dto.auth.request.UserUpdateRequestDto;
 import com.ome.dto.auth.response.UserInfoResponseDto;
 import com.ome.service.auth.CustomUserDetails;
 import com.ome.service.auth.UserService;
+import com.ome.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
