@@ -49,38 +49,45 @@ export default function ApproveManage() {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">작가 승인 관리</h2>
 
-      <div className="bg-white shadow rounded">
-        <table className="w-full table-auto border">
-          <thead className="bg-gray-100 text-left">
+      <div className="overflow-x-auto bg-white shadow rounded">
+        <table className="w-full table-fixed">
+          <colgroup>
+            <col style={{ width: '33.33%' }} />
+            <col style={{ width: '33.33%' }} />
+            <col style={{ width: '33.33%' }} />
+          </colgroup>
+          <thead className="bg-gray-100">
             <tr>
-              <th className="p-3">이름</th>
-              <th>이메일</th>
-              <th>작업</th>
+              <th className="p-3 text-left">이름</th>
+              <th className="p-3 text-left">이메일</th>
+              <th className="p-3 text-center">작업</th>
             </tr>
           </thead>
           <tbody>
             {approvals.map((item) => (
               <tr key={item.userId} className="border-t">
-                <td className="p-3">{item.username}</td>
-                <td>{item.email}</td>
-                <td>
+                <td className="p-3 text-left break-words">{item.username}</td>
+                <td className="p-3 text-left break-words">{item.email}</td>
+                <td className="p-3 text-center">
                   {!item.approved ? (
-                    <>
+                    <div className="flex justify-center gap-2">
                       <button
-                        className="bg-green-500 text-white px-3 py-1 rounded mr-2"
+                        className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
                         onClick={() => handleApprove(item.userId)}
                       >
                         승인
                       </button>
                       <button
-                        className="bg-red-500 text-white px-3 py-1 rounded"
+                        className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                         onClick={() => handleReject(item.userId)}
                       >
                         거절
                       </button>
-                    </>
+                    </div>
                   ) : (
-                    <span className="text-green-600">승인됨</span>
+                    <div className="font-semibold text-green-600">
+                      승인됨
+                    </div>
                   )}
                 </td>
               </tr>
