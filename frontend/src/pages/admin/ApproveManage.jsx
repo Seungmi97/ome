@@ -43,7 +43,7 @@ export default function ApproveManage() {
 
   useEffect(() => {
     fetchApprovals();
-  }, [page]);
+  }, [fetchApprovals, page]);
 
   return (
     <div className="p-6">

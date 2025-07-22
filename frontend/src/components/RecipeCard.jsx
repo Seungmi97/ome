@@ -7,11 +7,6 @@ const RecipeCard = ({ id, title, thumbnailUrl, isPremium, bookmarkCount, writerN
   const isPaid = isPremium === true || isPremium === 'true' || isPremium === 'premium';
 
   // ✅ 단일 이미지 경로 처리
-  // const imageSrc = thumbnailUrl
-  //   ? thumbnailUrl.startsWith('http')
-  //     ? thumbnailUrl
-  //     : `http://localhost:8081${thumbnailUrl}` // ✅ 여기가 핵심
-  //   : null;
   const imageSrc = thumbnailUrl
   ? thumbnailUrl.startsWith('http')
     ? thumbnailUrl
