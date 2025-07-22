@@ -17,7 +17,7 @@ public class QuestionResponseDto {
 	private LocalDateTime createdAt;
 	private String author;
 	private String status;
-	private Answer answer;
+	private AnswerResponseDto answer;
 	
 	public static QuestionResponseDto from(Question question) {
 		QuestionResponseDto dto = new QuestionResponseDto();
@@ -28,7 +28,12 @@ public class QuestionResponseDto {
 		dto.setCreatedAt(question.getCreatedAt());
 		dto.setAuthor(question.getUser().getUsername());
 		dto.setStatus(question.getStatus().toString());
-		dto.setAnswer(question.getAnswer());
+		
+		if(question.getAnswer() != null) {			
+			dto.setAnswer(AnswerResponseDto.from(question.getAnswer()));
+		} else {
+			dto.setAnswer(null);
+		}
 		
 		return dto;
 	}

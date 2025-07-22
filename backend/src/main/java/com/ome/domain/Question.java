@@ -50,5 +50,12 @@ public class Question {
         this.answer = answer;
         answer.setQuestion(this); // 양방향 연관관계 편의 메서드
     }
+	
+	public void removeAnswer() {
+		if(this.answer != null) {
+			this.answer.setQuestion(null);
+			this.answer = null;
+		}
+	}
 
 }
