@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ome.domain.Comment;
 import com.ome.domain.Recipe;
@@ -19,7 +20,6 @@ import com.ome.repository.membership.MembershipRepository;
 import com.ome.repository.recipe.MediaRepository;
 import com.ome.repository.recipe.RecipeRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -67,7 +67,13 @@ public class CommentService {
 	    return commentRepository.save(comment).getCommentId();
 	}
 	
-	
+	@Transactional(readOnly = true)
+	public CommentResponseDto getCommentDtoById(Long commentId) {
+	    Comment comment = commentRepository.findById(commentId)
+	        .orElseThrow(() -> new RuntimeException("댓글 없음"));
+
+	    return CommentResponseDto.from(comment); // ✅ 세션 안에서 from() 호출
+	}
 	
 	/**
 	 * 댓글,대댓글 조회 (트리 형태 정렬)
@@ -144,5 +150,5 @@ public class CommentService {
 
 	    commentRepository.delete(comment);
 	}
-	
+
 }
