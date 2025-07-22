@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +24,8 @@ import com.ome.domain.Recipe;
 import com.ome.domain.Review;
 import com.ome.domain.Users;
 import com.ome.dto.review.request.ReviewRequestDto;
+import com.ome.dto.review.response.ReviewResponseDto;
+import com.ome.repository.auth.UserRepository;
 import com.ome.repository.recipe.MediaRepository;
 import com.ome.repository.recipe.RecipeRepository;
 import com.ome.repository.review.ReviewRepository;
@@ -35,6 +40,7 @@ public class ReviewService {
 	private final RecipeRepository recipeRepository;
 	private final ReviewRepository reviewRepository;
 	private final MediaRepository mediaRepository;
+	private final UserRepository userRepository;
 	
 	@Value("${file.upload-dir}")
 	private String uploadDir; // 파일 저장 경로
@@ -54,14 +60,14 @@ public class ReviewService {
 		review.setRecipe(recipe);
 		review.setComment(requestDto.getComment());
 		
-		review = reviewRepository.save(review);
+		reviewRepository.save(review);
 		
 		// Media
 		for(int i = 0; i < files.size(); i++) {
 			MultipartFile file = files.get(i);
 			if(!file.isEmpty()) {
 				String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-				Path path = Paths.get(uploadDir, fileName);
+				Path path = Paths.get(uploadDir, "/uploads/", fileName);
 				try {
 					if(!Files.exists(path.getParent())) {
 						Files.createDirectories(path.getParent());
@@ -83,5 +89,23 @@ public class ReviewService {
 		}
 		
 		return "후기가 등록되었습니다";
+	}
+
+	@Transactional
+	public Page<ReviewResponseDto> getReview(Long recipeId, int page, int size, Long userId) {
+		
+		Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RuntimeException("존재하지 않는 레시피입니다"));
+		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다"));
+		
+		if(recipe.getIsPremium() == PremiumType.premium && user.getMembership().getMemberState() != MemberState.premium) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
+		Pageable pageable = PageRequest.of(page, size);
+		return reviewRepository.findAllByRecipe(recipe, pageable)
+				.map(review -> {
+					List<Media> mediaList = mediaRepository.findByTargetTypeAndTargetIdOrderBySeqAsc(TargetType.REVIEW, review.getReviewId());
+					return ReviewResponseDto.from(review, mediaList);
+				});
 	}
 }
