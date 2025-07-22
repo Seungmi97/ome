@@ -7,10 +7,13 @@ import org.springframework.stereotype.Repository;
 
 import com.ome.domain.Question;
 import com.ome.domain.Recipe;
+import com.ome.domain.Users;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
 	Page<Question> findAllByRecipe(Recipe recipe, Pageable pageable);
+
+	void deleteAllByUser(Users user);
 
 }

@@ -39,4 +39,11 @@ public class ReportController {
 																@AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(reportService.getAllReports(targetType, keyword, page, size, user.getId()));
 	}
+	
+	@PatchMapping("/{id}")
+	public ResponseEntity<String> handleReport(@PathVariable Long id,
+											   @RequestBody ReportRequestDto requestDto,
+											   @AuthenticationPrincipal CustomUserDetails user){
+		return ResponseEntity.ok(reportService.handleReport(id, requestDto, user.getId()));
+	}
 }
