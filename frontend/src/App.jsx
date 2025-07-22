@@ -12,6 +12,7 @@ import ReportManage from "@/pages/admin/ReportManage";
 import RecipeManage from "@/pages/admin/RecipeManage";
 import Unauthorized from '@/pages/public/Unauthorized';
 import UserMainpage from "@/pages/user/UserMainpage";
+import UserMyPage from "@/pages/user/UserMyPage";
 import CreatorMainpage from "@/pages/creator/CreatorMainpage";
 import CreatorDashboard from "@/pages/creator/CreatorDashboard";
 import CreatorDashboardRecipeViewContent from "@/pages/creator/CreatorDashboardRecipeViewContent";
@@ -31,11 +32,13 @@ export default function App() {
       {/* 유저 보호 라우트 */}
       <Route element={<ProtectedRoute role="USER" />}>
         <Route path="/user/main" element={<UserMainpage />} />
+        <Route path="/user/mypage" element={<UserMyPage />} />
       </Route>
 
       {/* 크리에이터 보호 라우트 */}
       <Route element={<ProtectedRoute role="CREATOR" />}>
         <Route path="/creator/main" element={<CreatorMainpage />} />
+        <Route path="/creator/mypage" element={<UserMyPage />} />
         <Route path="/creator/recipes/upload" element={<RecipeUploadForm />} />
         {/* 크리에이터 대시보드 레이아웃 (중첩) */}
         <Route path="/creator" element={<CreatorDashboardLayout />}>

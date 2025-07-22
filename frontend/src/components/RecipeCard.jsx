@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 
-const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount }) => {
+const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount, writerNickname }) => {
   const navigate = useNavigate();
   const isPaid = isPremium === true || isPremium === 'true' || isPremium === 'premium';
 
@@ -31,9 +31,13 @@ const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount }) => {
         {title}
       </div>
 
+      {/* 작가 */}
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">
+        작가: {writerNickname || '알 수 없음'}
+      </div>
+
       {/* 유/무료 상태 + 찜 수 */}
       <div className="flex justify-between items-center mt-auto">
-        {/* 유/무료 */}
         <span
           className={`text-xs font-bold px-2 py-0.5 rounded ${isPaid
               ? 'bg-amber-100 text-amber-700'
@@ -43,7 +47,6 @@ const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount }) => {
           {isPaid ? '유료' : '무료'}
         </span>
 
-        {/* 찜 수 */}
         <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-300">
           <Heart size={14} className="fill-red-400 text-red-400" />
           <span>{bookmarkCount}</span>
