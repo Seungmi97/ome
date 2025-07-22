@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 // 🌟🌟 회원 가입 , 로그인 , 로그아웃 , 사용자 id 및 이메일 중복 확인 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173") 
 @RequiredArgsConstructor
 public class AuthController {
 	

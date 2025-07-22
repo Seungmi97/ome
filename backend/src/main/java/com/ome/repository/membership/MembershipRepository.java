@@ -18,12 +18,12 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     Optional<Membership> findByUser(Users user);
 
     // 또는 userId 기준 조회도 가능
-    Optional<Membership> findByUserId(Long userId);
+    Optional<Membership> findByUser_Id(Long userId);
 
     boolean existsByUserId(Long userId);
+    
     @Query("SELECT m FROM Membership m WHERE m.memberState = 'premium' AND m.expiredAt <= :threshold")
     List<Membership> findExpiringSoon(@Param("threshold") LocalDateTime threshold);
-
     List<Membership> findByMemberStateAndExpiredAtBefore(String memberState, LocalDateTime time);
 
 }

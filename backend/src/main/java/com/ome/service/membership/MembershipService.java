@@ -64,7 +64,7 @@ public class MembershipService {
 
     // ✅ 내 멤버십 정보 조회
     public MembershipResponse getMyMembership(Long userId) {
-        Membership membership = membershipRepository.findByUserId(userId)
+        Membership membership = membershipRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new IllegalArgumentException("멤버십 정보가 없습니다."));
 
         return MembershipResponse.builder()
@@ -76,7 +76,7 @@ public class MembershipService {
     // ✅ 업그레이드: premium 전환
     @Transactional
     public void upgradeMembership(Long userId) {
-        Membership membership = membershipRepository.findByUserId(userId)
+        Membership membership = membershipRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new IllegalArgumentException("멤버십 정보가 없습니다."));
 
         membership.setMemberState(MemberState.premium);
@@ -89,7 +89,7 @@ public class MembershipService {
     // ✅ 해지 신청
     @Transactional
     public void cancelMembership(Long userId) {
-        Membership membership = membershipRepository.findByUserId(userId)
+        Membership membership = membershipRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new IllegalArgumentException("멤버십 정보가 없습니다."));
 
         membership.setMemberState(MemberState.free);
@@ -100,7 +100,7 @@ public class MembershipService {
     }
     @Transactional
 public void extendPremiumMembership(Long userId) {
-    Membership membership = membershipRepository.findByUserId(userId)
+    Membership membership = membershipRepository.findByUser_Id(userId)
             .orElseThrow(() -> new IllegalArgumentException("멤버십 정보 없음"));
 
     // 현재 만료일 기준 30일 연장 (과거일 경우 오늘부터)

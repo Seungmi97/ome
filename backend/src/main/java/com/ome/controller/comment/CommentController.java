@@ -37,7 +37,8 @@ public class CommentController {
     public ResponseEntity<?> create(@RequestBody CommentRequestDto dto,
                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long commentId = commentService.createComment(dto, userDetails.getId());
-        return ResponseEntity.ok("댓글 작성 완료 : " + commentId);
+        CommentResponseDto response = commentService.getCommentDtoById(commentId);
+        return ResponseEntity.ok(response);
     }
     
     /**
