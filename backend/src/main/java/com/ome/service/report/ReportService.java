@@ -1,9 +1,14 @@
 package com.ome.service.report;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.ome.common.enums.ReportStatus;
 import com.ome.common.enums.ReportTargetType;
+import com.ome.common.enums.Role;
 import com.ome.domain.Report;
 import com.ome.domain.Users;
 import com.ome.dto.report.request.ReportRequestDto;
@@ -57,6 +62,12 @@ public class ReportService {
 	public ReportResponseDto getReport(Long id, Long userId) {
 		
 		Report report = reportRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 신고글입니다"));
+		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다"));
+		
+		if(user.getRole() != Role.ADMIN) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
 		String target;
 		
 		switch(report.getTargetType()) {
@@ -74,5 +85,61 @@ public class ReportService {
 		}
 		
 		return ReportResponseDto.from(report, target);
+	}
+
+	@Transactional
+	public Page<ReportResponseDto> getAllReports(String targetType, String keyword, int page, int size, Long userId) {
+		
+		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다"));
+		
+		if(user.getRole() != Role.ADMIN) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
+		Pageable pageable = PageRequest.of(page, size);
+		
+		Page<Report> reportPage;
+		
+		if(targetType != null && !targetType.isEmpty()) {
+			ReportTargetType type;
+			switch(targetType) {
+			case "recipe":
+				type = ReportTargetType.RECIPE;
+				break;
+			case "comment":
+				type = ReportTargetType.COMMENT;
+				break;
+			case "user":
+				type = ReportTargetType.USER;
+				break;
+			default:
+				throw new RuntimeException("targetType is null"); 
+			}
+			reportPage = reportRepository.findByTargetType(type, pageable);
+		} else if(keyword != null && !keyword.isEmpty()) {
+			reportPage = reportRepository.findByReasonContaining(keyword, pageable);
+		} else {
+			reportPage = reportRepository.findAll(pageable);
+		}
+		
+		return reportPage.map(report -> {
+			String target;
+			
+			switch(report.getTargetType()) {
+			case ReportTargetType.RECIPE:
+				target = recipeRepository.findById(report.getTargetId()).orElseThrow(() -> new RuntimeException("존재하지 않는 레시피입니다")).getTitle();
+				break;
+			case ReportTargetType.COMMENT:
+				target = commentRepository.findById(report.getTargetId()).orElseThrow(() -> new RuntimeException("존재하지 않는 댓글입니다")).getContent();
+				break;
+			case ReportTargetType.USER:
+				target = userRepository.findById(report.getTargetId()).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다")).getUsername();
+				break;
+			default:
+				target = "";
+			}
+			
+			return ReportResponseDto.from(report, target);
+		});
 	}
 }

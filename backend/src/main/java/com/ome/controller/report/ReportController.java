@@ -1,5 +1,6 @@
 package com.ome.controller.report;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,5 +29,14 @@ public class ReportController {
 	public ResponseEntity<ReportResponseDto> getReport(@PathVariable Long id,
 													   @AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(reportService.getReport(id, user.getId()));
+	}
+	
+	@GetMapping
+	public ResponseEntity<Page<ReportResponseDto>> getAllReports(@RequestParam(required = false) String targetType,
+																@RequestParam(required = false) String keyword,
+																@RequestParam(defaultValue = "0") int page,
+																@RequestParam(defaultValue = "10") int size,
+																@AuthenticationPrincipal CustomUserDetails user){
+		return ResponseEntity.ok(reportService.getAllReports(targetType, keyword, page, size, user.getId()));
 	}
 }
