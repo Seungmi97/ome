@@ -5,9 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -48,10 +46,11 @@ public class SecurityConfig {
 						.requestMatchers("/api/admin/**").hasRole("ADMIN") // 관리자 권한을 가진 사용자에게만 접근 가능
 						.requestMatchers("/creator/**").hasRole("CREATOR") // 작가 권한을 가진 사용자에게만 접근 가능
 						.requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/check-id",
-								"/api/auth/check-email", "/api/recipes/**", "/api/auth/upload-profile","/api/auth/find-id","/api/auth/reset-password")
+								"/api/auth/check-email", "/api/recipes/**", "/api/auth/upload-profile",
+								"/api/auth/find-id", "/api/auth/reset-password", "/uploads/**")
 						.permitAll()
-						.requestMatchers("/api/**", "/api/recipes/**", "/api/auth/logout", "/api/memberships/**").authenticated()
-						
+						.requestMatchers("/api/**", "/api/recipes/**", "/api/auth/logout", "/api/memberships/**")
+						.authenticated()
 
 						.anyRequest().authenticated() // USER은 여기서 처리
 				)
@@ -69,7 +68,8 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("https://jaybee-dev.app", "https://www.jaybee-dev.app", "http://localhost:5173"));
+		config.setAllowedOrigins(
+				List.of("https://jaybee-dev.app", "https://www.jaybee-dev.app", "http://localhost:5173"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
 		config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
 		config.setAllowCredentials(true);

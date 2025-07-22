@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import defaultProfile from '@/assets/human.png'; // 기본 프로필 이미지 경로
 
-const UserProfileCard = ({ imageUrl, name, role, plan }) => {
+const UserProfileCard = ({ name, role, plan }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ const UserProfileCard = ({ imageUrl, name, role, plan }) => {
     <div className="relative flex items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-white dark:from-gray-800 dark:to-gray-900 border border-purple-300 shadow-sm">
       {/* 프로필 이미지 */}
       <img
-        src={imageUrl || defaultProfile} // 기본 프로필 이미지 경로
+        src={defaultProfile} // 기본 프로필 이미지 경로
         alt={`${name} 프로필`}
         className="w-16 h-16 rounded-full object-cover border-2 border-purple-400 shadow-sm"
       />

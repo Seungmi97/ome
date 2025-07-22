@@ -93,7 +93,7 @@ export default function MainContent({ keywords, onAddKeyword }) {
                 <RecipeCard
                   id={item.recipeId}
                   title={item.title}
-                  imageUrl={item.imageUrl}
+                  thumbnailUrl={item.thumbnailUrl} // ✅ thumbnailUrl 사용
                   isPremium={item.isPremium}
                   bookmarkCount={item.bookmarkCount || 0}
                   writerNickname={item.writerNickname}

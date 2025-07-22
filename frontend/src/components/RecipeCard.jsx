@@ -2,9 +2,28 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 
-const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount, writerNickname }) => {
+const RecipeCard = ({ id, title, thumbnailUrl, isPremium, bookmarkCount, writerNickname }) => {
   const navigate = useNavigate();
   const isPaid = isPremium === true || isPremium === 'true' || isPremium === 'premium';
+
+  // ✅ 단일 이미지 경로 처리
+  // const imageSrc = thumbnailUrl
+  //   ? thumbnailUrl.startsWith('http')
+  //     ? thumbnailUrl
+  //     : `http://localhost:8081${thumbnailUrl}` // ✅ 여기가 핵심
+  //   : null;
+  const imageSrc = thumbnailUrl
+  ? thumbnailUrl.startsWith('http')
+    ? thumbnailUrl
+    : `${import.meta.env.VITE_IMAGE_BASE_URL}${thumbnailUrl}`
+  : null;
+
+  // ✅ 디버깅 로그
+  console.log(`[RecipeCard]`, {
+    title,
+    thumbnailUrl,
+    imageSrc,
+  });
 
   return (
     <div
@@ -13,9 +32,9 @@ const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount, writerNickn
     >
       {/* 이미지 */}
       <div className="w-full h-32 bg-gray-100 dark:bg-gray-800 rounded mb-3 overflow-hidden">
-        {imageUrl ? (
+        {imageSrc ? (
           <img
-            src={imageUrl}
+            src={imageSrc}
             alt={title}
             className="w-full h-full object-cover rounded"
           />
@@ -40,8 +59,8 @@ const RecipeCard = ({ id, title, imageUrl, isPremium, bookmarkCount, writerNickn
       <div className="flex justify-between items-center mt-auto">
         <span
           className={`text-xs font-bold px-2 py-0.5 rounded ${isPaid
-              ? 'bg-amber-100 text-amber-700'
-              : 'bg-green-100 text-green-700'
+            ? 'bg-amber-100 text-amber-700'
+            : 'bg-green-100 text-green-700'
             }`}
         >
           {isPaid ? '유료' : '무료'}

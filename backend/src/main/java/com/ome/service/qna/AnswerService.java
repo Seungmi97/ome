@@ -19,62 +19,63 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AnswerService {
-	
+
 	private final QuestionRepository questionRepository;
 	private final UserRepository userRepository;
 	private final AnswerRepository answerRepository;
-	
+
 	@Transactional
 	public String createAnswer(Long questionId, AnswerRequestDto requestDto, Long userId) {
-		
-		Question question = questionRepository.findById(questionId).orElseThrow(() -> new RuntimeException("존재하지 않는 질문글입니다"));
-		
-		if(question.getRecipe().getWriter().getId() != userId) {
+
+		Question question = questionRepository.findById(questionId)
+				.orElseThrow(() -> new RuntimeException("존재하지 않는 질문글입니다"));
+
+		if (question.getRecipe().getWriter().getId() != userId) {
 			throw new AccessDeniedException("권한이 없습니다");
 		}
-		
+
 		Users creator = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다"));
-		
+
 		Answer answer = new Answer();
 		answer.setCreator(creator);
 		answer.setContent(requestDto.getContent());
-		
+
 		question.setAnswer(answer);
 		question.setStatus(QuestionStatus.ANSWERED);
 		questionRepository.save(question);
-		
+
 		return "답변이 등록되었습니다";
 	}
 
 	@Transactional
 	public String updateAnswer(Long id, AnswerRequestDto requestDto, Long userId) {
-		
+
 		Answer answer = answerRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 답변입니다"));
-		
-		if(answer.getCreator().getId() != userId) {
+
+		if (answer.getCreator().getId() != userId) {
 			throw new AccessDeniedException("권한이 없습니다");
 		}
-		
+
 		answer.setContent(requestDto.getContent());
-		
+
 		return "답변이 수정되었습니다";
 	}
 
 	@Transactional
 	public String deleteAnswer(Long id, Long userId) {
-		
+
 		Answer answer = answerRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 답변입니다"));
 		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다"));
-		
-		if(answer.getCreator().getId() != userId && user.getRole() != Role.ADMIN) {
+
+		if (answer.getCreator().getId() != userId && user.getRole() != Role.ADMIN) {
 			throw new AccessDeniedException("권한이 없습니다");
 		}
-		
+
 		Question question = answer.getQuestion();
-		question.removeAnswer();
+		question.getAnswer();
 		question.setStatus(QuestionStatus.WAITING);
-		
+
 		return "답변이 삭제되었습니다";
 	}
- 
+
 }

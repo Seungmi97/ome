@@ -7,7 +7,7 @@ import {
 
 export default function ApproveManage() {
   const [approvals, setApprovals] = useState([]);
-  const [page, setPage] = useState(0);
+  const [page] = useState(0);
   const [size] = useState(10);
 
   const fetchApprovals = async () => {
