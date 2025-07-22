@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 public class QuestionResponseDto {
-	
+
 	private Long id;
 	private String title;
 	private String content;
@@ -17,8 +17,8 @@ public class QuestionResponseDto {
 	private LocalDateTime createdAt;
 	private String author;
 	private String status;
-	private Answer answer;
-	
+	private AnswerResponseDto answer;
+
 	public static QuestionResponseDto from(Question question) {
 		QuestionResponseDto dto = new QuestionResponseDto();
 		dto.setId(question.getQuestionId());
@@ -28,8 +28,14 @@ public class QuestionResponseDto {
 		dto.setCreatedAt(question.getCreatedAt());
 		dto.setAuthor(question.getUser().getUsername());
 		dto.setStatus(question.getStatus().toString());
-		dto.setAnswer(question.getAnswer());
-		
+
+		// 답변이 존재하는 경우에만 AnswerResponseDto로 변환
+		if (question.getAnswer() != null) {
+			dto.setAnswer(AnswerResponseDto.from(question.getAnswer()));
+		} else {
+			dto.setAnswer(null);
+		}
+
 		return dto;
 	}
 }

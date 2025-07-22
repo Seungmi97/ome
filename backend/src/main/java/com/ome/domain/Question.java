@@ -19,36 +19,36 @@ public class Question {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "question_id")
 	private Long questionId;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "user_id", nullable = false)
 	private Users user;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id", nullable = false)
+	@JoinColumn(name = "recipe_id", nullable = false)
 	private Recipe recipe;
-	
+
 	@Column(nullable = false, length = 50)
 	private String title;
-	
+
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String content;
-	
+
 	@Column(name = "is_secret", nullable = false)
 	private boolean isSecret;
-	
+
 	@Enumerated(EnumType.STRING)
 	private QuestionStatus status;
-	
+
 	@CreationTimestamp
 	private LocalDateTime createdAt;
-	
+
 	@OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Answer answer;
-	
+
 	public void setAnswer(Answer answer) {
-        this.answer = answer;
-        answer.setQuestion(this); // 양방향 연관관계 편의 메서드
-    }
+		this.answer = answer;
+		answer.setQuestion(this); // 양방향 연관관계 편의 메서드
+	}
 
 }

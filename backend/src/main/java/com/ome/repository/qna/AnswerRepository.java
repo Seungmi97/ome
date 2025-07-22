@@ -12,4 +12,5 @@ import com.ome.domain.Question;
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
 	public Optional<Answer> findByQuestion(Question question);
+
 }
