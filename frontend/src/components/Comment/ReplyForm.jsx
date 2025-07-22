@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const CommentForm = ({ onSubmit }) => {
+const ReplyForm = ({ onSubmit, onCancel }) => {
   const [text, setText] = useState('');
 
   const handleSubmit = (e) => {
@@ -11,24 +11,31 @@ const CommentForm = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6">
+    <form onSubmit={handleSubmit} className="mb-4">
       <textarea
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-        rows="4"
-        placeholder="댓글을 입력하세요..."
+        rows="3"
+        placeholder="답글을 입력하세요..."
         value={text}
         onChange={(e) => setText(e.target.value)}
       ></textarea>
-      <div className="flex justify-end mt-2">
+      <div className="flex justify-end mt-2 gap-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-sm text-gray-500 hover:text-red-500"
+        >
+          취소
+        </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700"
+          className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-1 text-sm rounded"
         >
-          등록하기
+          등록
         </button>
       </div>
     </form>
   );
 };
 
-export default CommentForm;
+export default ReplyForm;

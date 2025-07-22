@@ -117,6 +117,31 @@ const RecipeDetail = () => {
           </p>
         </div>
 
+        {/* 대표 이미지 */}
+        {recipe.imageUrls?.[0] && (
+          <div className="mb-8">
+            <img
+              src={recipe.imageUrls[0]}
+              alt="대표 이미지"
+              className="w-full h-[400px] object-cover rounded-xl shadow-lg"
+            />
+          </div>
+        )}
+
+        {/* 나머지 이미지 */}
+        {recipe.imageUrls?.length > 1 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {recipe.imageUrls.slice(1).map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                alt={`레시피 이미지 ${index + 2}`}
+                className="w-full h-auto rounded-lg shadow-md"
+              />
+            ))}
+          </div>
+        )}
+
         <div className="text-sm text-gray-400 mt-8 text-right">
           마지막 수정일: {recipe.updatedAt?.split(' ')[0]}
         </div>

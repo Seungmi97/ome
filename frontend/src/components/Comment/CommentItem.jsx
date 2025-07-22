@@ -1,17 +1,81 @@
-import React from 'react';
+import React, { useState } from 'react';
+import ReplyForm from './ReplyForm';
 
-const CommentItem = ({ comment }) => {
+const CommentItem = ({ comment, onReply, onDelete, onUpdate }) => {
+  const [showReplyForm, setShowReplyForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editContent, setEditContent] = useState(comment?.content || '');
+  const [children, setChildren] = useState(comment.children || []);
+
+  const handleReply = async (text) => {
+    console.log('🧾 대댓글 등록 시도:', { parentId: comment.commentId, text });
+    const newChild = await onReply(text, comment.commentId);
+    if (newChild) setChildren((prev) => [...prev, newChild]);
+    setShowReplyForm(false);
+  };
+
+  const handleUpdate = async () => {
+    if (!editContent.trim()) return;
+    await onUpdate(comment.commentId, editContent);
+    setShowEditForm(false);
+  };
+
+  const authorName = comment?.user?.nickname || comment?.writer || '익명';
+
   return (
-    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <div className="flex justify-between items-center mb-2">
-        <span className="font-semibold text-gray-800">{comment.author}</span>
-        <span className="text-sm text-gray-500">{comment.date}</span>
+    <div className="border p-3 rounded-md bg-white shadow-sm">
+      <div className="text-sm font-bold">{authorName}</div>
+      {!showEditForm ? (
+        <div className="text-sm text-gray-700 whitespace-pre-wrap">{comment.content}</div>
+      ) : (
+        <textarea
+          className="w-full border rounded p-1 text-sm mt-1"
+          rows={3}
+          value={editContent}
+          onChange={(e) => setEditContent(e.target.value)}
+        />
+      )}
+      <div className="text-xs text-gray-400 mt-1">{comment.createdAt}</div>
+
+      <div className="flex gap-2 text-sm mt-1">
+        <button onClick={() => setShowReplyForm((v) => !v)} className="text-blue-500">
+          답글
+        </button>
+        <button onClick={() => setShowEditForm((v) => !v)} className="text-yellow-500">
+          수정
+        </button>
+        <button onClick={() => onDelete(comment.commentId)} className="text-red-500">
+          삭제
+        </button>
+        {showEditForm && (
+          <button onClick={handleUpdate} className="text-green-600 ml-2">
+            저장
+          </button>
+        )}
       </div>
-      <p className="text-gray-700">{comment.content}</p>
-      <div className="flex justify-end gap-2 mt-2 text-sm">
-        <button className="text-gray-500 hover:text-gray-700">수정</button>
-        <button className="text-red-500 hover:text-red-700">신고</button>
-      </div>
+
+      {showReplyForm && (
+        <div className="mt-2 ml-4">
+          <ReplyForm
+            onSubmit={handleReply}
+            onCancel={() => setShowReplyForm(false)}
+          />
+        </div>
+      )}
+
+      {children.length > 0 && (
+        <div className="mt-3 ml-6 pl-4 border-l border-gray-200 space-y-3">
+          {children.map((child) => (
+            <CommentItem
+              key={child.commentId || `${child.content}-${Math.random()}`}
+              comment={child}
+              onReply={onReply}
+              onDelete={onDelete}
+              onUpdate={onUpdate}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
