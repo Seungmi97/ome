@@ -7,4 +7,6 @@ public class ReportRequestDto {
 	private Long targetId;
 	private String targetType;
 	private String reason;
+	
+	private String status;
 }

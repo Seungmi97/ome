@@ -15,8 +15,9 @@ import com.ome.dto.mypage.response.UserMyPageResponseDto;
 import com.ome.repository.auth.UserRepository;
 import com.ome.repository.bookmark.BookmarkRepository;
 import com.ome.repository.recipe.RecipeRepository;
+import com.ome.service.qna.QuestionService;
+import com.ome.service.review.ReviewService;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 // 🌟🌟 마이페이지 , 사용자 정보 조회 / 수정, 탈퇴 등 동작 구현
@@ -27,11 +28,15 @@ public class UserService {
 	private final RecipeRepository recipeRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final BookmarkRepository bookmarkRepository;
+	private final QuestionService questionService;
+	private final ReviewService reviewService;
 	
 	// 🔴 회원 탈퇴 
 	public void deleteUser(String userId) {
 		Users user = userRepository.findByUserId(userId)
 				.orElseThrow(()-> new RuntimeException("존재하지 않는 사용자입니다."));
+		questionService.deleteAllQuestionsByUser(user);
+		reviewService.deleteAllReviewsByUser(user);
 		userRepository.delete(user);
 	}
 	
