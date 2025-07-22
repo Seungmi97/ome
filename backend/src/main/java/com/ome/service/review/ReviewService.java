@@ -108,4 +108,63 @@ public class ReviewService {
 					return ReviewResponseDto.from(review, mediaList);
 				});
 	}
+
+	@Transactional
+	public String updateReview(Long id, ReviewRequestDto requestDto, Long userId, List<MultipartFile> files) {
+		
+		Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("존재하지 않는 후기입니다"));
+		
+		if(review.getUser().getId() != userId) {
+			throw new AccessDeniedException("권한이 없습니다");
+		}
+		
+		review.setComment(requestDto.getComment());
+		
+		List<Media> mediaList = mediaRepository.findByTargetTypeAndTargetIdOrderBySeqAsc(TargetType.REVIEW, review.getReviewId());
+		
+		// Media
+		// 기존 삭제
+		if (mediaList != null) {
+			for (Media media : mediaList) {
+	            // 1. 실제 파일 삭제
+	            Path filePath = Paths.get(uploadDir, Paths.get(media.getUrl()).toString());
+	            try {
+	                Files.deleteIfExists(filePath);
+	            } catch (IOException e) {
+	                System.err.println("파일 삭제 실패: " + filePath);
+	            }
+
+	            // 2. DB에서 Media 삭제
+	            mediaRepository.delete(media);
+			}
+		}
+		
+		// 새로 저장
+		for(int i = 0; i < files.size(); i++) {
+			MultipartFile file = files.get(i);
+			if(!file.isEmpty()) {
+				String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+				Path path = Paths.get(uploadDir, "/uploads/", fileName);
+				try {
+					if(!Files.exists(path.getParent())) {
+						Files.createDirectories(path.getParent());
+					}
+					Files.write(path, file.getBytes());
+				} catch(IOException e) {
+					throw new RuntimeException("파일 저장 실패", e);
+				}
+				
+				Media media = new Media();
+				media.setTargetType(TargetType.REVIEW);
+				media.setTargetId(review.getReviewId());
+				media.setUrl("/uploads/" + fileName);
+				media.setSeq(i);
+				media.setUploadedAt(LocalDateTime.now());
+				
+				mediaRepository.save(media);
+			}
+		}
+				
+		return "후기가 수정되었습니다";
+	}
 }

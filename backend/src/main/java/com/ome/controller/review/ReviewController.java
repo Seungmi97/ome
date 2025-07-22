@@ -43,4 +43,15 @@ public class ReviewController {
 													   @AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(reviewService.getReview(recipeId, page, size, user.getId()));
 	}
+	
+	@PatchMapping("/reviews/{id}")
+	public ResponseEntity<String> updateReview(@PathVariable Long id,
+											   @RequestPart("data") String json,  // JSON 형식의 레시피 데이터 파트 (문자열로 받음)
+											   @RequestPart(value = "files", required = false) List<MultipartFile> files, // 업로드한 이미지 파일들
+											   @AuthenticationPrincipal CustomUserDetails user
+											   ) throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		ReviewRequestDto dto = objectMapper.readValue(json, ReviewRequestDto.class);
+		return ResponseEntity.ok(reviewService.updateReview(id, dto, user.getId(), files != null ? files : List.of()));
+	}
 }
