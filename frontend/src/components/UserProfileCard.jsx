@@ -9,7 +9,11 @@ const UserProfileCard = ({ imageUrl, name, role, plan }) => {
   const navigate = useNavigate();
 
   const handleMyPageClick = () => {
-    navigate('/user/mypage');
+    if (role === 'CREATOR') {
+      navigate('/creator/mypage');
+    } else {
+      navigate('/user/mypage');
+    }
   };
 
   return (
@@ -38,15 +42,18 @@ const UserProfileCard = ({ imageUrl, name, role, plan }) => {
 
       {/* 버튼들 */}
       <div className="flex items-center gap-2">
-        {/* 마이페이지 버튼 */}
-        <button
-          onClick={handleMyPageClick}
-          className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-purple-600 bg-purple-100 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700 rounded-full transition"
-          title="마이페이지"
-        >
-          <User size={16} />
-          <span className="hidden sm:inline">마이페이지</span>
-        </button>
+        {/* 마이페이지 버튼 (관리자 제외) */}
+        {role !== 'ADMIN' && (
+          <button
+            onClick={handleMyPageClick}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-purple-600 bg-purple-100 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700 rounded-full transition"
+            title="마이페이지"
+          >
+            <User size={16} />
+            <span className="hidden sm:inline">마이페이지</span>
+          </button>
+        )}
+
 
         {/* 로그아웃 버튼 */}
         <button

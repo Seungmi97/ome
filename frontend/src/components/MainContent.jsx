@@ -96,6 +96,7 @@ export default function MainContent({ keywords, onAddKeyword }) {
                   imageUrl={item.imageUrl}
                   isPremium={item.isPremium}
                   bookmarkCount={item.bookmarkCount || 0}
+                  writerNickname={item.writerNickname}
                 />
               </div>
             ))

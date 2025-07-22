@@ -70,7 +70,7 @@ const UserMyPage = () => {
       // await api.put('/api/users/profile', editForm);
       alert('프로필이 성공적으로 저장되었습니다!');
       setIsEditing(false);
-      
+
       // 로컬 데이터 업데이트
       setMyPageData(prev => ({
         ...prev,
@@ -168,18 +168,16 @@ const UserMyPage = () => {
             <nav className="flex">
               {[
                 { id: 'profile', label: '회원 정보', icon: User },
-                { id: 'subscriptions', label: '구독 작가', icon: Users },
-                { id: 'favorites', label: '찜한 레시피', icon: Heart },
+                // { id: 'favorites', label: '찜한 레시피', icon: Heart },
                 { id: 'settings', label: '회원 정보 수정', icon: Settings }
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-                  }`}
+                  className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    }`}
                 >
                   <tab.icon className="w-4 h-4" />
                   {tab.label}
@@ -193,13 +191,6 @@ const UserMyPage = () => {
             {/* 회원 정보 탭 */}
             {activeTab === 'profile' && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <User className="w-5 h-5" />
-                    프로필
-                  </h2>
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
@@ -240,75 +231,24 @@ const UserMyPage = () => {
                           </span>
                         </div>
                       </div>
-                      <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                        해지
-                      </button>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      소개글
+                  <div className="flex flex-col items-center justify-center">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {myPageData.userInfo.username}
                     </label>
-                    <textarea
-                      placeholder="소개글을 입력해주세요"
-                      className="w-full h-32 p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
-                      value={editForm.introduction}
-                      readOnly
+                    <img
+                      src={user?.imageUrl || '/src/assets/human.png'}
+                      alt="프로필 이미지"
+                      className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600 shadow"
                     />
                   </div>
                 </div>
-
-                <div className="flex gap-3 justify-center pt-4">
-                  <button
-                    onClick={handleAccountSettings}
-                    className="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md font-medium hover:bg-gray-200 dark:hover:bg-gray-600"
-                  >
-                    저장
-                  </button>
-                  <button
-                    onClick={handleCancelEdit}
-                    className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    취소
-                  </button>
-                </div>
               </div>
             )}
 
-            {/* 구독 작가 탭 */}
-            {activeTab === 'subscriptions' && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Users className="w-5 h-5" />
-                    구독 목록
-                  </h2>
-                </div>
-
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                      <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
-                        <ChefHat className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-medium text-gray-900 dark:text-white">chef {String.fromCharCode(64 + i)}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          안녕하세요, 셰프 {String.fromCharCode(64 + i)} 입니다.<br />
-                          만나서 반갑습니다
-                        </p>
-                      </div>
-                      <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium">
-                        구독 취소
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 찜한 레시피 탭 */}
+            {/* 찜한 레시피 탭
             {activeTab === 'favorites' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -337,7 +277,7 @@ const UserMyPage = () => {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* 회원 정보 수정 탭 */}
             {activeTab === 'settings' && (
@@ -353,30 +293,6 @@ const UserMyPage = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        닉네임
-                      </label>
-                      <input
-                        type="text"
-                        value={editForm.username}
-                        onChange={(e) => setEditForm({...editForm, username: e.target.value})}
-                        className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        이메일
-                      </label>
-                      <input
-                        type="email"
-                        value={editForm.email}
-                        onChange={(e) => setEditForm({...editForm, email: e.target.value})}
-                        className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         아이디
                       </label>
                       <input
@@ -387,36 +303,63 @@ const UserMyPage = () => {
                       />
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        이메일
+                      </label>
+                      <input
+                        type="email"
+                        value={editForm.email}
+                        onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                        className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        닉네임
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.username}
+                        onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                        className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+
                     <div className="flex items-center justify-between">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           멤버십
                         </label>
-                        <select 
-                          value={myPageData.userInfo.membershipType || 'Free'}
-                          className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        >
-                          <option value="Free">Free</option>
-                          <option value="Premium">Premium</option>
-                          <option value="Platinum">Platinum</option>
-                        </select>
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-bold text-gray-900 dark:text-white">
+                            {myPageData.userInfo.membershipType || 'Premium'}
+                          </span>
+                        </div>
                       </div>
-                      <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium">
-                        탈퇴
+                      <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        해지
                       </button>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      소개글
+                  <div className="flex flex-col items-center justify-center">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {myPageData.userInfo.username}
                     </label>
-                    <textarea
-                      placeholder="소개글을 입력해주세요"
-                      value={editForm.introduction}
-                      onChange={(e) => setEditForm({...editForm, introduction: e.target.value})}
-                      className="w-full h-32 p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+
+                    <img
+                      src={user?.imageUrl || '/src/assets/human.png'}
+                      alt="프로필 이미지"
+                      className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600 shadow"
                     />
+
+                    <button
+                      className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium"
+                    >
+                      회원 탈퇴
+                    </button>
                   </div>
                 </div>
 

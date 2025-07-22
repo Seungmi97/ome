@@ -38,6 +38,7 @@ export default function App() {
       {/* 크리에이터 보호 라우트 */}
       <Route element={<ProtectedRoute role="CREATOR" />}>
         <Route path="/creator/main" element={<CreatorMainpage />} />
+        <Route path="/creator/mypage" element={<UserMyPage />} />
         <Route path="/creator/recipes/upload" element={<RecipeUploadForm />} />
         {/* 크리에이터 대시보드 레이아웃 (중첩) */}
         <Route path="/creator" element={<CreatorDashboardLayout />}>

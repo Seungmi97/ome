@@ -1,12 +1,15 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '@/assets/ome-logo.svg';
 import { useAuth } from '@/hooks/useAuth';
 import UserProfileCard from '@/components/UserProfileCard';
+import { getMembershipInfo } from '@/services/membershipAPI';
 
 const Header = ({ onReset }) => {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
+  const [membershipPlan, setMembershipPlan] = useState('');
 
   const handleLogout = async () => {
     try {
@@ -16,6 +19,22 @@ const Header = ({ onReset }) => {
       console.error('로그아웃 실패:', err);
     }
   };
+
+  useEffect(() => {
+    const fetchPlan = async () => {
+      try {
+        const res = await getMembershipInfo();
+        setMembershipPlan(res.data?.memberState || '정보 없음');
+      } catch (err) {
+        console.warn('멤버십 정보 조회 실패:', err);
+        setMembershipPlan('정보 없음');
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchPlan();
+    }
+  }, [isAuthenticated]);
 
   const handleLogoClick = () => {
     onReset?.();
@@ -40,7 +59,7 @@ const Header = ({ onReset }) => {
               imageUrl={user.imageUrl || '/default-profile.png'}
               name={user.username}
               role={user.role}
-              plan={user.plan || 'Basic Plan'}
+              plan={membershipPlan} 
               onLogout={handleLogout}
             />
           ) : (

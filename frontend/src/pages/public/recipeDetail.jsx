@@ -2,12 +2,42 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getRecipeDetail } from '@/services/recipeAPI';
 import CommentSection from '@/components/Comment/CommentSection';
+import { isBookmarked, addBookmark, removeBookmark } from '@/services/bookmarkAPI';
+import { Heart, Flag, Check } from 'lucide-react';
 
 const RecipeDetail = () => {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [reported, setReported] = useState(false);
+
+  useEffect(() => {
+    const checkBookmark = async () => {
+      try {
+        const res = await isBookmarked(recipeId);
+        setBookmarked(res.data === true);
+      } catch (err) {
+        console.error('찜 여부 확인 실패:', err);
+      }
+    };
+    if (recipeId) checkBookmark();
+  }, [recipeId]);
+
+  const toggleBookmark = async () => {
+    try {
+      if (bookmarked) {
+        await removeBookmark(recipeId);
+      } else {
+        await addBookmark(recipeId);
+      }
+      setBookmarked(!bookmarked);
+    } catch (err) {
+      console.error('찜 토글 실패:', err);
+      alert('찜 처리 중 오류가 발생했습니다.');
+    }
+  };
 
   useEffect(() => {
     const fetchRecipeData = async () => {
@@ -144,6 +174,26 @@ const RecipeDetail = () => {
 
         <div className="text-sm text-gray-400 mt-8 text-right">
           마지막 수정일: {recipe.updatedAt?.split(' ')[0]}
+        </div>
+        {/* 🆕 찜 & 신고 버튼 */}
+        <div className="mt-4 flex gap-4 justify-end">
+          <button
+            onClick={toggleBookmark}
+            className={`flex items-center gap-1 px-4 py-2 rounded-md border transition 
+      ${bookmarked ? 'border-amber-500 text-amber-600 bg-amber-50' : 'border-gray-300 text-gray-600 hover:bg-gray-100'}`}
+          >
+            {bookmarked ? <Check size={16} /> : <Heart size={16} />}
+            {bookmarked ? '찜 완료' : '찜하기'}
+          </button>
+
+          <button
+            onClick={() => setReported((prev) => !prev)}
+            className={`flex items-center gap-1 px-4 py-2 rounded-md border transition 
+      ${reported ? 'border-red-400 text-red-500 bg-red-50' : 'border-gray-300 text-gray-600 hover:bg-gray-100'}`}
+          >
+            {reported ? <Check size={16} /> : <Flag size={16} />}
+            {reported ? '신고 완료' : '신고하기'}
+          </button>
         </div>
 
         {/* 댓글 영역 */}
