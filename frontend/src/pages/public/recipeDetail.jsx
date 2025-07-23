@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getRecipeDetail } from '@/services/recipeAPI';
+import { createReport } from '@/services/reportAPI';
 import CommentSection from '@/components/Comment/CommentSection';
 import { isBookmarked, addBookmark, removeBookmark } from '@/services/bookmarkAPI';
 import { Heart, Flag, Check } from 'lucide-react';
@@ -53,6 +54,23 @@ const RecipeDetail = () => {
     };
     fetchRecipeData();
   }, [recipeId]);
+
+  const handleReport = async () => {
+    if (reported) return; // 중복 방지
+
+    try {
+      await createReport({
+        targetType: 'RECIPE',
+        targetId: recipe.recipeId,
+        reason: '부적절한 콘텐츠입니다.', // 또는 사용자 선택으로 확장 가능
+      });
+      setReported(true);
+      alert('신고가 접수되었습니다.');
+    } catch (err) {
+      console.error('신고 실패:', err);
+      alert('신고 처리 중 오류가 발생했습니다.');
+    }
+  };
 
   if (loading) {
     return (
@@ -187,7 +205,7 @@ const RecipeDetail = () => {
           </button>
 
           <button
-            onClick={() => setReported((prev) => !prev)}
+            onClick={handleReport}
             className={`flex items-center gap-1 px-4 py-2 rounded-md border transition 
       ${reported ? 'border-red-400 text-red-500 bg-red-50' : 'border-gray-300 text-gray-600 hover:bg-gray-100'}`}
           >

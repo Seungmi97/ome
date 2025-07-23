@@ -47,9 +47,9 @@ public class SecurityConfig {
 						.requestMatchers("/creator/**").hasRole("CREATOR") // 작가 권한을 가진 사용자에게만 접근 가능
 						.requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/check-id",
 								"/api/auth/check-email", "/api/recipes/**", "/api/auth/upload-profile",
-								"/api/auth/find-id", "/api/auth/reset-password", "/uploads/**")
+								"/api/auth/find-id", "/api/auth/reset-password", "/uploads/**", "/api/recipes/categories")
 						.permitAll()
-						.requestMatchers("/api/**", "/api/recipes/**", "/api/auth/logout", "/api/memberships/**")
+						.requestMatchers("/api/**", "/api/recipes/**", "/api/auth/logout", "/api/memberships/**", "/api/reports/**", "/api/mypage/**")
 						.authenticated()
 
 						.anyRequest().authenticated() // USER은 여기서 처리

@@ -22,12 +22,11 @@ export default function CreatorDashboardSummaryContent() {
   ];
 
   const platformData = [
-    { name: 'Linux', count: 12000 },
-    { name: 'Mac', count: 23000 },
-    { name: 'iOS', count: 19000 },
-    { name: 'Windows', count: 26000 },
-    { name: 'Android', count: 14000 },
-    { name: 'Other', count: 22000 },
+    { name: '라볶이', count: 80 },
+    { name: '모쉡 장어덮밥', count: 23 },
+    { name: '김치볶음밥', count: 19 },
+    { name: '맛있는 팥빙수 만들기', count: 26 },
+    { name: '매콤달콤 떡볶이', count: 14 },
   ];
 
   return (

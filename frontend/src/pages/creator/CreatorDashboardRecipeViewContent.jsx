@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getRecipeList, deleteRecipe } from '@/services/recipeAPI';
 import Paginationbar from '@/components/Pagenationbar';
 import ProgressSearchBar from '@/components/ProgressSearchBar';
+import { useAuth } from '@/hooks/useAuth';
 
 let debounceTimer;
 
@@ -14,14 +15,21 @@ export default function CreatorDashboardRecipeViewContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  const { user } = useAuth();  // 레시피 필터링 임시로 프론트단에서 필터링하기 위함.
   const PAGE_SIZE = 10;
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const res = await getRecipeList({ page, size: PAGE_SIZE, keyword: debouncedSearch });
-      setRecipes(res.data.content);
-      setTotalPages(res.data.totalPages);
+
+      // 🔥 프론트에서 필터링
+      const myRecipes = res.data.content.filter(
+        (r) => r.writerNickname === user?.username
+      );
+
+      setRecipes(myRecipes);
+      setTotalPages(1); // 페이지네이션은 임시로 무효화
       setCheckedItems([]);
     } catch (err) {
       console.error('레시피 목록 조회 실패:', err);

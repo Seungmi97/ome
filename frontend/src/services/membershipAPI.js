@@ -10,7 +10,7 @@ export const upgradeMembership = () => {
   return api.post('/memberships/upgrade');
 };
 
-// ✅ 프리미엄 해지 신청
+// ✅ 프리미엄 해지 신청 - 필드명을 따로 넣지않음 AuthContext에서 userId를 사용
 export const cancelMembership = () => {
-  return api.post('/memberships/cancel');
-};
+  return api.post('/memberships/cancel'); 
+}

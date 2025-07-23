@@ -53,3 +53,14 @@ export const logout = () => api.post('/auth/logout');
  * @returns {Promise<import('../types/user').User>}
  */
 export const getMyProfile = () => api.get('/users/me'); 
+
+
+// 회원 수정 요청
+export const updateUserInfo = (payload) => {
+  return api.put('/api/users/me', payload); // ✅ 실제 dto 구조로 수정
+};
+
+// 회원 탈퇴 요청
+export const deleteAccount = () => {
+  return api.delete('/users');
+};

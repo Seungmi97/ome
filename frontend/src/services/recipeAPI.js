@@ -51,3 +51,8 @@ export const getCreatorList = () => {
 export const getCreatorAvgBookmark = () => {
   return api.get('/recipes/id/bookmark/avg');
 };
+
+// ✅ 카테고리 목록 조회
+export const getCategoryList = () => {
+  return api.get('/recipes/categories');
+};

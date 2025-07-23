@@ -3,8 +3,20 @@ import { LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import defaultProfile from '@/assets/human.png';
 
-export default function SidebarProfileCard() {
+export default function SidebarProfileCard({ plan }) {
   const { user, logout } = useAuth();
+
+  const planText = plan === 'premium'
+    ? '프리미엄 플랜'
+    : plan === 'free'
+    ? '베이직 플랜'
+    : '플랜 조회 실패';
+
+  const planColor = plan === 'premium'
+    ? 'text-yellow-500'
+    : plan === 'free'
+    ? 'text-purple-500'
+    : 'text-gray-400';
 
   return (
     <div className="flex items-center justify-between bg-purple-100 dark:bg-gray-800 p-3 rounded-xl border border-purple-300 dark:border-gray-600 relative">
@@ -18,15 +30,10 @@ export default function SidebarProfileCard() {
 
         <div className="text-left">
           <div className="text-sm font-semibold text-gray-800 dark:text-white truncate max-w-[120px]">
-            {user?.username}
+            {user?.username || '알 수 없음'}
           </div>
-          <div
-            className={`text-xs font-medium ${user?.plan === '베이직 플랜'
-              ? 'text-purple-500'
-              : 'text-yellow-500'
-              }`}
-          >
-            {user?.plan || '베이직 플랜'}
+          <div className={`text-xs font-medium ${planColor}`}>
+            {planText}
           </div>
         </div>
       </div>

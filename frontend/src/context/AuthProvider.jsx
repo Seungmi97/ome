@@ -94,6 +94,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         login,
         logout: clearAuth,
+        refetch: fetchUserProfile,
       }}
     >
       {!loading && children}

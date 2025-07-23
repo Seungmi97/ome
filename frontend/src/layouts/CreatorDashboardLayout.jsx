@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import CreatorDashboardSidebar from '@/pages/creator/CreatorDashboardSidebar';
+import { getMembershipInfo } from '@/services/membershipAPI';
 
 export default function CreatorDashboardLayout() {
-  // ✅ 메인페이지에서 설정한 theme 적용만
+  const [plan, setPlan] = useState(''); // 플랜 상태
+
+  // ✅ 테마 적용
   useEffect(() => {
     const theme = localStorage.theme;
     const root = document.documentElement;
@@ -15,12 +18,27 @@ export default function CreatorDashboardLayout() {
     }
   }, []);
 
+  // ✅ 멤버십 정보 조회
+  useEffect(() => {
+    const fetchPlan = async () => {
+      try {
+        const res = await getMembershipInfo();
+        setPlan(res.data?.memberState || '플랜 조회 실패');
+      } catch (err) {
+        console.warn('멤버십 정보 조회 실패:', err);
+        setPlan('플랜 조회 실패');
+      }
+    };
+
+    fetchPlan();
+  }, []);
+
   return (
     <div className="min-h-screen flex bg-white text-black dark:bg-black dark:text-white transition-colors duration-300">
-      <CreatorDashboardSidebar />
+      {/* plan prop 전달 */}
+      <CreatorDashboardSidebar plan={plan} />
 
       <main className="flex-1 p-6 relative">
-        {/* 중첩 라우팅 콘텐츠 */}
         <Outlet />
       </main>
     </div>

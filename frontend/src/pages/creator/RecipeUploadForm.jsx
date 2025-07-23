@@ -98,7 +98,7 @@ export default function RecipeUploadForm() {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2"
+            className="w-full border border-gray-300 rounded px-3 py-2 h-60"
             required
           />
         </div>

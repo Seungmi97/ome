@@ -16,6 +16,28 @@ const UserProfileCard = ({ name, role, plan }) => {
     }
   };
 
+  const getPlanLabel = (plan) => {
+    switch (plan) {
+      case 'free':
+        return '무료 플랜';
+      case 'premium':
+        return '프리미엄 플랜';
+      default:
+        return '플랜 조회 실패';
+    }
+  };
+
+  const getPlanColor = (plan) => {
+    switch (plan) {
+      case 'free':
+        return 'text-purple-500';
+      case 'premium':
+        return 'text-yellow-500';
+      default:
+        return 'text-gray-400';
+    }
+  };
+
   return (
     <div className="relative flex items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-white dark:from-gray-800 dark:to-gray-900 border border-purple-300 shadow-sm">
       {/* 프로필 이미지 */}
@@ -37,7 +59,11 @@ const UserProfileCard = ({ name, role, plan }) => {
                 : '일반유저'}
           </span>
         </p>
-        <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">{plan || '플랜 조회 실패'}</p>
+
+        {/* 플랜 스타일링 */}
+        <p className={`text-sm mt-1 font-medium ${getPlanColor(plan)}`}>
+          {getPlanLabel(plan)}
+        </p>
       </div>
 
       {/* 버튼들 */}

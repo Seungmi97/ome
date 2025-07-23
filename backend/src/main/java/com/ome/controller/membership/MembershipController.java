@@ -34,7 +34,7 @@ public class MembershipController {
     }
     
     @PostMapping("/cancel")
-    public void cancelMembership(@RequestBody MembershipCancelRequest request) {
-    	membershipService.cancelMembership(request.getUserId());
+    public void cancelMembership(@AuthenticationPrincipal(expression = "user") Users user) {
+        membershipService.cancelMembership(user.getId());
     }
 }

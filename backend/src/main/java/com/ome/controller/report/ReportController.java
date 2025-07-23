@@ -19,18 +19,21 @@ public class ReportController {
 	
 	private final ReportService reportService;
 
+	//신고 생성
 	@PostMapping
 	public ResponseEntity<String> createReport(@RequestBody ReportRequestDto requestDto,
 											   @AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(reportService.createReport(requestDto, user.getUser()));
 	}
 	
+	//신고 단일조회
 	@GetMapping("/{id}")
 	public ResponseEntity<ReportResponseDto> getReport(@PathVariable Long id,
 													   @AuthenticationPrincipal CustomUserDetails user){
 		return ResponseEntity.ok(reportService.getReport(id, user.getId()));
 	}
 	
+	// 신고 목록조회
 	@GetMapping
 	public ResponseEntity<Page<ReportResponseDto>> getAllReports(@RequestParam(required = false) String targetType,
 																@RequestParam(required = false) String keyword,

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import SidebarProfileCard from './SidebarProfileCard';
 import logo from '@/assets/ome-logo.svg'; // ✅ 로고 import
 
-export default function CreatorDashboardSidebar() {
+export default function CreatorDashboardSidebar({ plan }) {
     const navigate = useNavigate();
 
     return (
@@ -14,7 +14,7 @@ export default function CreatorDashboardSidebar() {
                 <img src={logo} alt="OME 로고" className="h-20 w-auto dark:invert" />
             </div>
 
-            <SidebarProfileCard />
+            <SidebarProfileCard plan={plan} />
 
             <nav className="space-y-4 pt-4">
                 <SidebarItem icon={<Home size={18} />} label="Home" onClick={() => navigate('/creator/main')} />
