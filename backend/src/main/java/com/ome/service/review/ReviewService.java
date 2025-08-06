@@ -167,4 +167,10 @@ public class ReviewService {
 				
 		return "후기가 수정되었습니다";
 	}
+	
+	@Transactional
+	public void deleteAllReviewsByUser(Users user) {
+		
+		reviewRepository.deleteAllByUser(user);
+	}
 }

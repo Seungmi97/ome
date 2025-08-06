@@ -1,8 +1,5 @@
 package com.ome.service.admin;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -12,6 +9,8 @@ import com.ome.common.enums.Role;
 import com.ome.domain.Users;
 import com.ome.dto.admin.request.UserDto;
 import com.ome.repository.auth.UserRepository;
+import com.ome.service.qna.QuestionService;
+import com.ome.service.review.ReviewService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminService {
 	private final UserRepository userRepository;
+	private final QuestionService questionService;
+	private final ReviewService reviewService;
 	
 	////////////////////////
 	//✅ 통계 메소드 추가 -> 마이페이지 분기 시 사용할 메소드임 
@@ -87,6 +88,8 @@ public class AdminService {
 	public void deleteUserHard(String userId) {
 		Users user = userRepository.findByUserId(userId)
 				.orElseThrow(()-> new RuntimeException("삭제할 사용자가 없습니다."));
+		questionService.deleteAllQuestionsByUser(user);
+		reviewService.deleteAllReviewsByUser(user);
 		userRepository.delete(user);
 	}
 	

@@ -106,5 +106,11 @@ public class QuestionService {
 
 		return "질문이 삭제되었습니다";
 	}
+	
+	@Transactional
+	public void deleteAllQuestionsByUser(Users user) {
+		
+		questionRepository.deleteAllByUser(user);
+	}
 
 }
